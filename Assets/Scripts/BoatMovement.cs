@@ -1,14 +1,10 @@
 using UnityEngine;
 
-public class BoatMovement : MonoBehaviour
+public class BoatController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public float moveSpeed = 10f;
+    public float turnSpeed = 50f;
 
-    // Update is called once per frame
     void Update()
     {
         
