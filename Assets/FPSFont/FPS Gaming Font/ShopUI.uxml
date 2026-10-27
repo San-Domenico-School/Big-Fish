@@ -1,0 +1,12 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="BuyContainer" style="flex-grow: 1; display: none; width: 22%; height: 22px;">
+        <ui:Label text="BUY" name="Buy" emoji-fallback-support="false" style="-unity-text-align: middle-left;"/>
+        <ui:Button text="YES" name="BuyYes"/>
+        <ui:Button text="No" name="BuyNo" enable-rich-text="false" style="height: 39px;"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="SellContainer" style="flex-grow: 1; display: none; width: 208px; height: 22%; flex-direction: column; top: 0; align-items: center;">
+        <ui:Label text="Sell" name="sell" emoji-fallback-support="true" style="-unity-text-align: upper-left; white-space: pre-wrap; text-overflow: ellipsis;"/>
+        <ui:Button text="YES" name="BuyYes"/>
+        <ui:Button text="No" name="BuyNo" enable-rich-text="false" style="height: 39px;"/>
+    </ui:VisualElement>
+</ui:UXML>
