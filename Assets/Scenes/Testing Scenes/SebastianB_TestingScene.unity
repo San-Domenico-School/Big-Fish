@@ -378,79 +378,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98b3dcba9409e4439b10be9aeac8b9a1, type: 3}
---- !u!1 &687999252 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 6ee3d93a17d9c4169b82800878ad0ed1, type: 3}
-  m_PrefabInstance: {fileID: 850707700}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &687999253 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6ee3d93a17d9c4169b82800878ad0ed1, type: 3}
   m_PrefabInstance: {fileID: 850707700}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &687999254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687999252}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6991158a3070a42c18c4068ea860f0c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BoatController
-  moveSpeed: 10
-  turnSpeed: 50
---- !u!54 &687999255
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687999252}
-  serializedVersion: 5
-  m_Mass: 10
-  m_LinearDamping: 0.5
-  m_AngularDamping: 0.5
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!114 &687999256
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687999252}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3196cf2affa7a40219c0ee2cb9ddcd4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BoatWaterFloater
-  floatPoints:
-  - {fileID: 1675191879}
-  - {fileID: 1134007724}
-  - {fileID: 249753711}
-  - {fileID: 2069854608}
-  depthBeforeSubmerged: 1
-  displacementAmount: 3
-  waterDrag: 0.99
-  waterAngularDrag: 0.5
-  waterSurface: {fileID: 2093354883}
 --- !u!1 &760763138
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,16 +672,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6ee3d93a17d9c4169b82800878ad0ed1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 760763141}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6ee3d93a17d9c4169b82800878ad0ed1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 687999254}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6ee3d93a17d9c4169b82800878ad0ed1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 687999255}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6ee3d93a17d9c4169b82800878ad0ed1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 687999256}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ee3d93a17d9c4169b82800878ad0ed1, type: 3}
 --- !u!1001 &934525067
 PrefabInstance:
