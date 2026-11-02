@@ -46,6 +46,7 @@ public class CatchRewardUI : MonoBehaviour
     private Quaternion originalLocalRotation;
     private Vector3 originalLocalScale;
 
+    // Change this from a Unity lifecycle to a call method from the fishing app
     private void Awake()
     {
         if (fishDisplayRect != null)
