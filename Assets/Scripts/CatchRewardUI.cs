@@ -1,4 +1,3 @@
-
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,10 +13,17 @@ public class CatchRewardUI : MonoBehaviour
     [SerializeField] private TMP_Text catchPrice;
     [SerializeField] private Image glowRays;
 
-    [Header("3D Preview")]
+    [Header("3D Preview & Launch Settings")]
     [SerializeField] private Transform fishAnchor;
     [SerializeField] private Camera previewCamera;
-    [SerializeField] private ParticleSystem catchBurst;
+    [SerializeField] private float delayBeforeLaunch = 1.0f; // Delay after triggering before fish appears
+    [SerializeField] private float launchDuration = 0.5f; // Time spent shooting to center
+    [SerializeField] private Vector3 startLaunchOffset = new Vector3(0f, -5f, 0f); // Spawns below center view
+
+    [Header("Particles")]
+    [SerializeField] private ParticleSystem catchBurst1;
+    [SerializeField] private ParticleSystem catchBurst2;
+    [SerializeField] private ParticleSystem catchBurst3;
 
     [Header("Animation")]
     [SerializeField] private float entranceDuration = 0.65f;
@@ -27,8 +33,7 @@ public class CatchRewardUI : MonoBehaviour
     [SerializeField] private float bobSpeed = 2f;
     [SerializeField] private float holdDuration = 2.4f;
     [SerializeField] private float fadeDuration = 0.45f;
-    [SerializeField] private Vector2 startOffset =
-        new Vector2(280f, -170f);
+    [SerializeField] private Vector2 startOffset = new Vector2(280f, -170f);
 
     private GameObject currentFish;
     private Coroutine animationRoutine;
@@ -36,99 +41,128 @@ public class CatchRewardUI : MonoBehaviour
     private Quaternion initialFishRotation;
     private Quaternion initialGlowRotation;
 
+    private Transform originalParent;
+    private Vector3 originalLocalPosition;
+    private Quaternion originalLocalRotation;
+    private Vector3 originalLocalScale;
+
     private void Awake()
     {
-        finalPosition = fishDisplayRect.anchoredPosition;
+        if (fishDisplayRect != null)
+            finalPosition = fishDisplayRect.anchoredPosition;
 
         if (glowRays != null)
         {
-            initialGlowRotation =
-                glowRays.rectTransform.localRotation;
+            initialGlowRotation = glowRays.rectTransform.localRotation;
         }
 
-        catchPopup.SetActive(false);
+        if (catchPopup != null)
+            catchPopup.SetActive(false);
 
         if (previewCamera != null)
             previewCamera.enabled = false;
     }
 
     public void ShowCatch(
-        GameObject fishPrefab,
+        GameObject originalFish,
         string fishName,
         int sellPrice)
     {
-        if (fishPrefab == null)
+        if (originalFish == null)
         {
-            Debug.LogWarning("CatchRewardUI: Fish prefab is missing.");
+            Debug.LogWarning("CatchRewardUI: Original fish is missing.");
+            return;
+        }
+
+        if (fishAnchor == null)
+        {
+            Debug.LogError("CatchRewardUI: Fish Anchor is not assigned.");
             return;
         }
 
         if (animationRoutine != null)
-            StopCoroutine(animationRoutine);
-
-        if (currentFish != null)
-            Destroy(currentFish);
-
-        if (catchBurst != null)
         {
-            catchBurst.Stop(
-                true,
-                ParticleSystemStopBehavior.StopEmittingAndClear
-            );
+            StopCoroutine(animationRoutine);
+            animationRoutine = null;
+            RestoreFish();
         }
 
-        currentFish = Instantiate(fishPrefab, fishAnchor);
-        currentFish.transform.localPosition = Vector3.zero;
-        currentFish.transform.localRotation =
-            Quaternion.Euler(0f, -90f, 0f);
+        StopAllParticles(true);
 
-        initialFishRotation =
-            currentFish.transform.localRotation;
+        currentFish = originalFish;
+
+        originalParent = currentFish.transform.parent;
+        originalLocalPosition = currentFish.transform.localPosition;
+        originalLocalRotation = currentFish.transform.localRotation;
+        originalLocalScale = currentFish.transform.localScale;
+
+        currentFish.transform.SetParent(fishAnchor, false);
+        currentFish.transform.localPosition = startLaunchOffset;
+        currentFish.transform.localRotation = Quaternion.Euler(-45f, -90f, 0f);
+
+        initialFishRotation = Quaternion.Euler(0f, -90f, 0f);
 
         catchName.text = fishName;
         catchPrice.text = "Value: $" + sellPrice;
 
-        catchPopup.SetActive(true);
-
-        if (previewCamera != null)
-            previewCamera.enabled = true;
-
         popupGroup.alpha = 0f;
-        fishDisplayRect.anchoredPosition =
-            finalPosition + startOffset;
+        fishDisplayRect.anchoredPosition = finalPosition + startOffset;
         fishDisplayRect.localScale = Vector3.one * 0.25f;
 
         if (glowRays != null)
         {
-            glowRays.color = new Color(
-                1f, 0.85f, 0.3f, 0f
-            );
-
-            glowRays.rectTransform.localRotation =
-                initialGlowRotation;
+            glowRays.color = new Color(1f, 0.85f, 0.3f, 0f);
+            glowRays.rectTransform.localRotation = initialGlowRotation;
         }
 
-        if (catchBurst != null)
-            catchBurst.Play();
-
-        animationRoutine = StartCoroutine(AnimateCatch());
+        animationRoutine = StartCoroutine(AnimateCatchSequence());
     }
 
-    private IEnumerator AnimateCatch()
+    private IEnumerator AnimateCatchSequence()
     {
+        // 1. Wait configured delay after input
+        yield return new WaitForSeconds(delayBeforeLaunch);
+
+        // Turn on UI popup and Camera after delay
+        if (catchPopup != null)
+            catchPopup.SetActive(true);
+
+        if (previewCamera != null)
+            previewCamera.enabled = true;
+
+        // 2. Shoot fish up from bottom to center
+        float launchElapsed = 0f;
+        while (launchElapsed < launchDuration)
+        {
+            launchElapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(launchElapsed / launchDuration);
+            float easedT = 1f - Mathf.Pow(1f - t, 3f); // Fast launch easing
+
+            currentFish.transform.localPosition = Vector3.Lerp(startLaunchOffset, Vector3.zero, easedT);
+            currentFish.transform.localRotation = Quaternion.Slerp(
+                Quaternion.Euler(-45f, -90f, 0f),
+                initialFishRotation,
+                easedT
+            );
+
+            yield return null;
+        }
+
+        currentFish.transform.localPosition = Vector3.zero;
+        currentFish.transform.localRotation = initialFishRotation;
+
+        // 3. Trigger totem particles once fish hits center screen
+        PlayAllParticles();
+
+        // 4. Main spin, hold, and fade animation
         float elapsed = 0f;
-        float totalDuration =
-            entranceDuration + holdDuration + fadeDuration;
+        float totalDuration = entranceDuration + holdDuration + fadeDuration;
 
         while (elapsed < totalDuration)
         {
             elapsed += Time.deltaTime;
 
-            float enter = Mathf.Clamp01(
-                elapsed / entranceDuration
-            );
-
-            // Ease out for a smooth arrival.
+            float enter = Mathf.Clamp01(elapsed / Mathf.Max(0.01f, entranceDuration));
             float eased = 1f - Mathf.Pow(1f - enter, 3f);
 
             fishDisplayRect.anchoredPosition = Vector2.Lerp(
@@ -137,71 +171,39 @@ public class CatchRewardUI : MonoBehaviour
                 eased
             );
 
-            fishDisplayRect.localScale =
-                Vector3.one * Mathf.Lerp(0.25f, 1f, eased);
+            fishDisplayRect.localScale = Vector3.one * Mathf.Lerp(0.25f, 1f, eased);
 
-            // Fade in, hold, then fade out.
             float fadeIn = Mathf.Clamp01(elapsed / 0.2f);
-            float fadeOutStart =
-                entranceDuration + holdDuration;
+            float fadeOutStart = entranceDuration + holdDuration;
+            float fadeOut = Mathf.Clamp01((elapsed - fadeOutStart) / Mathf.Max(0.01f, fadeDuration));
 
-            float fadeOut = Mathf.Clamp01(
-                (elapsed - fadeOutStart) /
-                Mathf.Max(0.01f, fadeDuration)
-            );
+            popupGroup.alpha = Mathf.Min(fadeIn, 1f - fadeOut);
 
-            popupGroup.alpha = Mathf.Min(
-                fadeIn, 1f - fadeOut
-            );
-
-            // Fast spin on entry, slow spin while displayed.
             if (currentFish != null)
             {
                 if (elapsed <= entranceDuration)
                 {
                     currentFish.transform.localRotation =
-                        initialFishRotation *
-                        Quaternion.Euler(
-                            0f,
-                            entranceSpinDegrees * eased,
-                            0f
-                        );
+                        initialFishRotation * Quaternion.Euler(0f, entranceSpinDegrees * eased, 0f);
                 }
                 else
                 {
-                    float idleTime =
-                        elapsed - entranceDuration;
-
+                    float idleTime = elapsed - entranceDuration;
                     currentFish.transform.localRotation =
-                        initialFishRotation *
-                        Quaternion.Euler(
-                            0f,
-                            entranceSpinDegrees +
-                            idleSpinDegreesPerSecond * idleTime,
-                            0f
-                        );
+                        initialFishRotation * Quaternion.Euler(0f, entranceSpinDegrees + idleSpinDegreesPerSecond * idleTime, 0f);
                 }
             }
 
-            // Small up-and-down movement of the UI preview.
             float bob = Mathf.Sin(elapsed * bobSpeed) * bobPixels;
-            float bobWeight = Mathf.Clamp01(
-                (elapsed - entranceDuration) / 0.25f
-            );
+            float bobWeight = Mathf.Clamp01((elapsed - entranceDuration) / 0.25f);
+            fishDisplayRect.anchoredPosition += Vector2.up * bob * bobWeight;
 
-            fishDisplayRect.anchoredPosition +=
-                Vector2.up * bob * bobWeight;
-
-            // Bright glow that fades with the popup.
             if (glowRays != null)
             {
                 Color color = glowRays.color;
                 color.a = 0.8f * (1f - fadeOut);
                 glowRays.color = color;
-
-                glowRays.rectTransform.Rotate(
-                    0f, 0f, 8f * Time.deltaTime
-                );
+                glowRays.rectTransform.Rotate(0f, 0f, 8f * Time.deltaTime);
             }
 
             yield return null;
@@ -213,9 +215,40 @@ public class CatchRewardUI : MonoBehaviour
         if (previewCamera != null)
             previewCamera.enabled = false;
 
-        if (currentFish != null)
-            Destroy(currentFish);
+        StopAllParticles(false);
+        RestoreFish();
 
         animationRoutine = null;
+    }
+
+    private void PlayAllParticles()
+    {
+        if (catchBurst1 != null) catchBurst1.Play();
+        if (catchBurst2 != null) catchBurst2.Play();
+        if (catchBurst3 != null) catchBurst3.Play();
+    }
+
+    private void StopAllParticles(bool clearImmediately)
+    {
+        ParticleSystemStopBehavior stopBehavior = clearImmediately
+            ? ParticleSystemStopBehavior.StopEmittingAndClear
+            : ParticleSystemStopBehavior.StopEmitting;
+
+        if (catchBurst1 != null) catchBurst1.Stop(true, stopBehavior);
+        if (catchBurst2 != null) catchBurst2.Stop(true, stopBehavior);
+        if (catchBurst3 != null) catchBurst3.Stop(true, stopBehavior);
+    }
+
+    private void RestoreFish()
+    {
+        if (currentFish == null)
+            return;
+
+        currentFish.transform.SetParent(originalParent, false);
+        currentFish.transform.localPosition = originalLocalPosition;
+        currentFish.transform.localRotation = originalLocalRotation;
+        currentFish.transform.localScale = originalLocalScale;
+
+        currentFish = null;
     }
 }

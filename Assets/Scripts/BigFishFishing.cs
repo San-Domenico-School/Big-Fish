@@ -1,6 +1,10 @@
 
 using UnityEngine;
 
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
+
 public class BigFishFishing : MonoBehaviour
 {
     [System.Serializable]
@@ -14,11 +18,13 @@ public class BigFishFishing : MonoBehaviour
     [Header("Catch Reward UI")]
     [SerializeField] private CatchRewardUI catchRewardUI;
 
+    [Header("Original Fish")]
+    [SerializeField] private GameObject originalFish;
+
     [Header("Fish Available to Catch")]
     [SerializeField] private FishData[] fishAvailable;
 
-    [Header("Fishing Settings")]
-    [SerializeField] private KeyCode catchKey = KeyCode.Space;
+    [Header("Testing")]
     [SerializeField] private bool testCatchOnSpace = true;
 
     private bool isFishing;
@@ -26,11 +32,23 @@ public class BigFishFishing : MonoBehaviour
 
     private void Update()
     {
-        // Simple test: press Space to catch a random configured fish.
-        if (testCatchOnSpace &&
-            Input.GetKeyDown(catchKey) &&
-            !isFishing)
+        if (!testCatchOnSpace || isFishing)
+            return;
+
+        bool spacePressed = false;
+
+#if ENABLE_INPUT_SYSTEM
+        if (Keyboard.current != null)
         {
+            spacePressed = Keyboard.current.spaceKey.wasPressedThisFrame;
+        }
+#elif ENABLE_LEGACY_INPUT_MANAGER
+        spacePressed = Input.GetKeyDown(KeyCode.Space);
+#endif
+
+        if (spacePressed)
+        {
+            Debug.Log("Space pressed! Attempting to catch a fish.");
             TryCatchFish();
         }
     }
@@ -40,20 +58,12 @@ public class BigFishFishing : MonoBehaviour
         isFishing = true;
         hasCaughtFish = false;
 
-        Debug.Log("Fishing started! Wait for a catch.");
+        Debug.Log("Fishing started!");
     }
 
     public void TryCatchFish()
     {
-        if (isFishing)
-        {
-            CompleteFishing(true);
-        }
-        else
-        {
-            // Allows Space to test a catch without a fishing minigame.
-            CompleteFishing(true);
-        }
+        CompleteFishing(true);
     }
 
     public void CompleteFishing(bool success)
@@ -75,7 +85,7 @@ public class BigFishFishing : MonoBehaviour
         if (catchRewardUI == null)
         {
             Debug.LogError(
-                "BigFishFishing: Assign CatchRewardUI in the Inspector."
+                "BigFishFishing: Catch Reward UI is not assigned!"
             );
             return;
         }
@@ -83,34 +93,40 @@ public class BigFishFishing : MonoBehaviour
         if (fishAvailable == null || fishAvailable.Length == 0)
         {
             Debug.LogError(
-                "BigFishFishing: Add at least one fish in Fish Available."
+                "BigFishFishing: Add at least one fish to Fish Available."
             );
             return;
         }
 
-        // Choose a random fish with a valid prefab.
+        if (originalFish == null)
+        {
+            Debug.LogError(
+                "BigFishFishing: Original Fish is not assigned!"
+            );
+            return;
+        }
+
         FishData caughtFish = GetRandomFish();
 
         if (caughtFish == null)
         {
             Debug.LogError(
-                "BigFishFishing: No fish with an assigned prefab was found."
+                "BigFishFishing: No fish has a valid prefab assigned!"
             );
             return;
         }
 
         hasCaughtFish = true;
 
-        // Show the 3D fish, spin animation, name, and sell price.
-        catchRewardUI.ShowCatch(
-            caughtFish.fishPrefab,
-            caughtFish.fishName,
-            caughtFish.sellPrice
-        );
-
         Debug.Log(
             "Caught " + caughtFish.fishName +
-            " worth $" + caughtFish.sellPrice + "!"
+            " worth $" + caughtFish.sellPrice
+        );
+
+        catchRewardUI.ShowCatch(
+            originalFish,
+            caughtFish.fishName,
+            caughtFish.sellPrice
         );
     }
 
@@ -121,15 +137,11 @@ public class BigFishFishing : MonoBehaviour
         foreach (FishData fish in fishAvailable)
         {
             if (fish != null && fish.fishPrefab != null)
-            {
                 validCount++;
-            }
         }
 
         if (validCount == 0)
-        {
             return null;
-        }
 
         int chosenIndex = Random.Range(0, validCount);
 
@@ -138,9 +150,7 @@ public class BigFishFishing : MonoBehaviour
             if (fish != null && fish.fishPrefab != null)
             {
                 if (chosenIndex == 0)
-                {
                     return fish;
-                }
 
                 chosenIndex--;
             }
