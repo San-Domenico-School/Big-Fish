@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Market and transaction loop.
-/// MARKET UPDATE tracks supply, demand, and clamped prices for each fish species.
+/// MARKET UPDATE prices each species from world population. That population is the market supply.
 /// TRANSACTION prices one buy or sell, asks the Player Manager to apply it, then returns to MARKET UPDATE.
 /// This component never changes the player's money or inventory itself.
 /// </summary>
@@ -37,17 +37,19 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
     [SerializeField] float sellDemandLoss = 0.25f;
 
     [Header("References")]
+    [Tooltip("Market supply for each species is the total population reported by this World State Manager.")]
+    [SerializeField] WorldStateManager worldStateManager;
     [SerializeField] PlayerManager playerManager;
     [SerializeField] MonoBehaviour uiManager;
 
     readonly Dictionary<string, FishSpecies> _fishById = new Dictionary<string, FishSpecies>();
     readonly Dictionary<string, EquipmentPrice> _equipmentById = new Dictionary<string, EquipmentPrice>();
-    readonly Dictionary<string, float> _restingSupply = new Dictionary<string, float>();
     readonly Dictionary<string, float> _restingDemand = new Dictionary<string, float>();
 
     IEconomyUi _ui;
     PricedTrade _activeTrade;
     bool _waitingForPlayer;
+    bool _supplyDirty;
     float _marketTimer;
     bool _warnedMissingPlayer;
     bool _warnedMissingBasePrice;
@@ -67,9 +69,22 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
         ResolveUi();
     }
 
+    void OnEnable()
+    {
+        if (worldStateManager != null)
+            worldStateManager.PopulationChanged += HandlePopulationChanged;
+    }
+
     void Start()
     {
+        RefreshPrices();
         PublishMarket();
+    }
+
+    void OnDisable()
+    {
+        if (worldStateManager != null)
+            worldStateManager.PopulationChanged -= HandlePopulationChanged;
     }
 
     void OnValidate()
@@ -190,6 +205,12 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
     void ReturnToMarket(EconomyTradeResult result)
     {
         SetState(EconomyState.MarketUpdate);
+        if (_supplyDirty)
+        {
+            RefreshPrices();
+            PublishMarket();
+        }
+
         _ui?.OnTradeFinished(result);
         TradeFinished?.Invoke(result);
     }
@@ -310,12 +331,10 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
 
         if (kind == TransactionKind.Sale)
         {
-            species.supply += quantity;
             species.demand = Mathf.Max(0f, species.demand - sellDemandLoss * quantity);
             return;
         }
 
-        species.supply = Mathf.Max(0f, species.supply - quantity);
         species.demand += buyDemandGain * quantity;
     }
 
@@ -328,11 +347,8 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
             if (fish == null || string.IsNullOrEmpty(fish.id))
                 continue;
 
-            float restingSupply = _restingSupply.TryGetValue(fish.id, out float supply) ? supply : fish.supply;
             float restingDemand = _restingDemand.TryGetValue(fish.id, out float demand) ? demand : fish.demand;
             float jitter = UnityEngine.Random.Range(-simulationJitter, simulationJitter);
-
-            fish.supply = Mathf.Max(0f, Mathf.Lerp(fish.supply, restingSupply, simulationStrength) + jitter);
             fish.demand = Mathf.Max(0f, Mathf.Lerp(fish.demand, restingDemand, simulationStrength) + jitter);
         }
     }
@@ -347,6 +363,7 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
                 continue;
 
             Sanitize(fish);
+            PullSupply(fish);
             fish.currentPrice = CalculatePrice(fish);
         }
     }
@@ -381,7 +398,6 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
     {
         _fishById.Clear();
         _equipmentById.Clear();
-        _restingSupply.Clear();
         _restingDemand.Clear();
 
         FishSpecies[] species = AllFish();
@@ -398,7 +414,6 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
             }
 
             _fishById.Add(fish.id, fish);
-            _restingSupply.Add(fish.id, Mathf.Max(0f, fish.supply));
             _restingDemand.Add(fish.id, Mathf.Max(0f, fish.demand));
         }
 
@@ -427,6 +442,27 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
             seaBass,
             swordfish
         };
+    }
+
+    void PullSupply(FishSpecies fish)
+    {
+        if (!Application.isPlaying || worldStateManager == null || fish == null || string.IsNullOrEmpty(fish.id))
+            return;
+
+        fish.supply = worldStateManager.GetSpeciesPopulation(fish.id);
+        _supplyDirty = false;
+    }
+
+    void HandlePopulationChanged()
+    {
+        if (CurrentState != EconomyState.MarketUpdate || _waitingForPlayer)
+        {
+            _supplyDirty = true;
+            return;
+        }
+
+        RefreshPrices();
+        PublishMarket();
     }
 
     void ResolveUi()
