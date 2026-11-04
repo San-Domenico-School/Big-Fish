@@ -6,7 +6,8 @@ using UnityEngine.Events;
 /// <summary>
 /// Player data owner.
 /// IDLE holds money, inventory, rank, and unlocks.
-/// PROCESS TRANSACTION, PROCESS CATCH, and PROGRESSION UPDATE are the only states that change that data.
+/// PROCESS TRANSACTION applies a total the Economy Manager already calculated. It does not price sales or report the transaction result to the UI.
+/// PROCESS CATCH and PROGRESSION UPDATE are the other states that change player data.
 /// Each one returns to IDLE, except a catch that raises a rank or qualifies an unlock, which goes to PROGRESSION UPDATE first.
 /// </summary>
 [DisallowMultipleComponent]
@@ -38,13 +39,14 @@ public class PlayerManager : MonoBehaviour
     [Header("References")]
     [Tooltip("Successful catches on this system enter PROCESS CATCH.")]
     [SerializeField] FishingSystem fishingSystem;
+    [Tooltip("Receives a transaction result when it could not be returned immediately. Prices and the UI transaction result stay with the Economy Manager.")]
+    [SerializeField] MonoBehaviour economyManager;
     [SerializeField] MonoBehaviour uiManager;
     [SerializeField] MonoBehaviour worldStateManager;
     [SerializeField] MonoBehaviour[] unlockReceivers = Array.Empty<MonoBehaviour>();
 
     [Header("Events")]
     [SerializeField] UnityEvent onPlayerDataChanged;
-    [SerializeField] UnityEvent onTransactionResolved;
     [SerializeField] UnityEvent onCatchProcessed;
     [SerializeField] UnityEvent onProgressionUpdated;
 
@@ -60,6 +62,7 @@ public class PlayerManager : MonoBehaviour
     readonly Queue<PendingWork> _pending = new Queue<PendingWork>();
 
     IPlayerUi _ui;
+    IEconomyManager _economy;
     IWorldStateManager _world;
     int _money;
     int _experience;
@@ -67,6 +70,7 @@ public class PlayerManager : MonoBehaviour
     int _slotsUsed;
     bool _draining;
     bool _warnedSkippedStartingItems;
+    bool _warnedMissingEconomy;
 
     public PlayerManagerState CurrentState { get; private set; } = PlayerManagerState.Idle;
     public bool IsIdle => CurrentState == PlayerManagerState.Idle && !_draining;
@@ -80,7 +84,6 @@ public class PlayerManager : MonoBehaviour
 
     public event Action<PlayerManagerState> StateChanged;
     public event Action<PlayerDataSnapshot> PlayerDataChanged;
-    public event Action<TransactionResult> TransactionResolved;
     public event Action<CatchProcessResult> CatchProcessed;
     public event Action<ProgressionResult> ProgressionUpdated;
 
@@ -165,11 +168,46 @@ public class PlayerManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Economy Manager entry. Runs PROCESS TRANSACTION, or queues it until IDLE.
-    /// A Deferred result is confirmed later through TransactionResolved.
+    /// Read-only check for the Economy Manager. Does not price the sale or change player data.
     /// </summary>
-    public TransactionResult SubmitTransaction(TransactionRequest request)
+    public ResourceCheck HasSufficientResources(TransactionRequest request)
     {
+        bool sufficient = TryEvaluate(request, out TransactionStatus status, out string reason);
+        return new ResourceCheck
+        {
+            IsSufficient = sufficient,
+            Status = sufficient ? TransactionStatus.Succeeded : status,
+            Reason = sufficient ? "Player has enough money and inventory." : reason,
+            Money = _money,
+            HeldCount = GetHeldCount(request.Category, request.ItemId),
+            InventoryUsed = _slotsUsed,
+            InventoryCapacity = inventoryCapacity
+        };
+    }
+
+    public int GetHeldCount(PlayerItemCategory category, string itemId)
+    {
+        if (category == PlayerItemCategory.Fish)
+            return CountOf(_fish, itemId);
+
+        if (category == PlayerItemCategory.CarriedItem)
+            return CountOf(_items, itemId);
+
+        if (IsUnlockCategory(category))
+            return IsUnlocked(itemId, ToUnlockKind(category)) ? 1 : 0;
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Applies a transaction the Economy Manager already priced.
+    /// TotalValue is used as sent. A deferred result is delivered to the Economy Manager.
+    /// </summary>
+    public TransactionResult CompleteTransaction(TransactionRequest request)
+    {
+        if (!ShouldQueue() && _pending.Count > 0)
+            Drain();
+
         if (ShouldQueue())
         {
             _pending.Enqueue(PendingWork.ForTransaction(request));
@@ -261,7 +299,7 @@ public class PlayerManager : MonoBehaviour
                 switch (work.Kind)
                 {
                     case PendingKind.Transaction:
-                        RunTransaction(work.Transaction);
+                        DeliverDeferredTransaction(RunTransaction(work.Transaction));
                         break;
                     case PendingKind.Catch:
                         RunCatch(work.Catch, work.Token);
@@ -285,10 +323,6 @@ public class PlayerManager : MonoBehaviour
         try
         {
             result = ResolveTransaction(request);
-            _ui?.OnTransactionResolved(result);
-            TransactionResolved?.Invoke(result);
-            onTransactionResolved?.Invoke();
-
             if (result.Status == TransactionStatus.Succeeded)
                 NotifyDataChanged();
         }
@@ -372,104 +406,195 @@ public class PlayerManager : MonoBehaviour
 
     TransactionResult ResolveTransaction(TransactionRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.TransactionId))
-            return Rejected(request, "Transaction id is required.");
-
-        if (_appliedTransactionIds.Contains(request.TransactionId))
-            return MakeResult(request.TransactionId, TransactionStatus.Duplicate, "Transaction was already applied.");
-
-        if (request.Quantity <= 0)
-            return Rejected(request, "Quantity must be greater than zero.");
-
-        if (request.UnitPrice < 0)
-            return Rejected(request, "Price cannot be negative.");
+        if (!TryEvaluate(request, out TransactionStatus status, out string reason))
+            return MakeResult(request.TransactionId, status, reason);
 
         if (request.Kind == TransactionKind.Purchase)
-            return ResolvePurchase(request);
+            ApplyPurchase(request);
+        else
+            ApplySale(request);
 
-        if (request.Kind == TransactionKind.Sale)
-            return ResolveSale(request);
-
-        return Rejected(request, "Unknown transaction kind.");
+        return MakeResult(request.TransactionId, TransactionStatus.Succeeded, "Transaction succeeded.");
     }
 
-    TransactionResult ResolvePurchase(TransactionRequest request)
+    bool TryEvaluate(TransactionRequest request, out TransactionStatus status, out string reason)
     {
-        if (!TryMultiply(request.Quantity, request.UnitPrice, out int cost))
-            return Rejected(request, "Transaction total is invalid.");
+        status = TransactionStatus.Rejected;
 
-        if (!allowDebt && _money < cost)
-            return Rejected(request, "Not enough money.");
-
-        bool grantUnlock = IsUnlockCategory(request.Category);
-        UnlockDefinition unlockDefinition = grantUnlock ? FindUnlock(request.ItemId) : null;
-        bool repeatable = unlockDefinition != null ? unlockDefinition.repeatable : request.Repeatable;
-        UnlockKind unlockKind = unlockDefinition != null ? unlockDefinition.kind : ToUnlockKind(request.Category);
-        if (grantUnlock && !repeatable && (request.Quantity != 1 || IsUnlocked(request.ItemId, unlockKind)))
-            return Rejected(request, "Unlock is already owned.");
-
-        bool usesSlots = request.Category == PlayerItemCategory.Fish || request.Category == PlayerItemCategory.CarriedItem;
-        int slotCost = request.SlotCostPerUnit;
-        if (usesSlots && slotCost <= 0)
-            slotCost = 1;
-
-        int slots = 0;
-        if (usesSlots)
+        if (string.IsNullOrWhiteSpace(request.TransactionId))
         {
-            if (!TryMultiply(request.Quantity, slotCost, out slots) || (long)_slotsUsed + slots > inventoryCapacity)
-                return Rejected(request, "Not enough inventory space.");
+            reason = "Transaction id is required.";
+            return false;
         }
 
-        if (grantUnlock && string.IsNullOrWhiteSpace(request.ItemId))
-            return Rejected(request, "Unlock id is required.");
+        if (_appliedTransactionIds.Contains(request.TransactionId))
+        {
+            status = TransactionStatus.Duplicate;
+            reason = "Transaction was already applied.";
+            return false;
+        }
 
-        if ((request.Category == PlayerItemCategory.Fish || request.Category == PlayerItemCategory.CarriedItem) &&
-            string.IsNullOrWhiteSpace(request.ItemId))
-            return Rejected(request, "Item id is required.");
+        if (request.Quantity <= 0)
+        {
+            reason = "Quantity must be greater than zero.";
+            return false;
+        }
 
-        long balance = (long)_money - cost;
-        if (balance < int.MinValue)
-            return Rejected(request, "Money total is too large.");
+        if (request.TotalValue < 0)
+        {
+            reason = "Transaction total is invalid.";
+            return false;
+        }
 
+        if (request.Kind == TransactionKind.Purchase)
+            return TryEvaluatePurchase(request, out status, out reason);
+
+        if (request.Kind == TransactionKind.Sale)
+            return TryEvaluateSale(request, out status, out reason);
+
+        reason = "Unknown transaction kind.";
+        return false;
+    }
+
+    bool TryEvaluatePurchase(TransactionRequest request, out TransactionStatus status, out string reason)
+    {
+        status = TransactionStatus.Rejected;
+
+        if (!allowDebt && _money < request.TotalValue)
+        {
+            reason = "Not enough money.";
+            return false;
+        }
+
+        if ((long)_money - request.TotalValue < int.MinValue)
+        {
+            reason = "Money total is too large.";
+            return false;
+        }
+
+        DescribeUnlock(request, out _, out bool repeatable, out UnlockKind unlockKind);
+        if (IsUnlockCategory(request.Category) && !repeatable && (request.Quantity != 1 || IsUnlocked(request.ItemId, unlockKind)))
+        {
+            reason = "Unlock is already owned.";
+            return false;
+        }
+
+        if (UsesInventorySlots(request.Category))
+        {
+            int slotCost = SlotCostOf(request);
+            if (!TryMultiply(request.Quantity, slotCost, out int slots) || (long)_slotsUsed + slots > inventoryCapacity)
+            {
+                reason = "Not enough inventory space.";
+                return false;
+            }
+        }
+
+        if (IsUnlockCategory(request.Category) && string.IsNullOrWhiteSpace(request.ItemId))
+        {
+            reason = "Unlock id is required.";
+            return false;
+        }
+
+        if (UsesInventorySlots(request.Category) && string.IsNullOrWhiteSpace(request.ItemId))
+        {
+            reason = "Item id is required.";
+            return false;
+        }
+
+        status = TransactionStatus.Succeeded;
+        reason = null;
+        return true;
+    }
+
+    bool TryEvaluateSale(TransactionRequest request, out TransactionStatus status, out string reason)
+    {
+        status = TransactionStatus.Rejected;
+
+        if (!UsesInventorySlots(request.Category))
+        {
+            reason = "Only fish and carried items can be sold.";
+            return false;
+        }
+
+        if ((long)_money + request.TotalValue > int.MaxValue)
+        {
+            reason = "Money total is too large.";
+            return false;
+        }
+
+        List<InventoryStack> list = request.Category == PlayerItemCategory.Fish ? _fish : _items;
+        if (!HasCount(list, request.ItemId, request.Quantity))
+        {
+            reason = "Not enough items to sell.";
+            return false;
+        }
+
+        status = TransactionStatus.Succeeded;
+        reason = null;
+        return true;
+    }
+
+    void ApplyPurchase(TransactionRequest request)
+    {
+        DescribeUnlock(request, out UnlockDefinition unlockDefinition, out bool repeatable, out UnlockKind unlockKind);
+        int slotCost = SlotCostOf(request);
         string displayName = DisplayNameOf(request);
         if (unlockDefinition != null && string.IsNullOrEmpty(request.DisplayName) && !string.IsNullOrEmpty(unlockDefinition.displayName))
             displayName = unlockDefinition.displayName;
 
-        SetMoney((int)balance);
+        SetMoney((int)((long)_money - request.TotalValue));
 
         if (request.Category == PlayerItemCategory.Fish)
             AddStack(_fish, request.ItemId, displayName, CatchKind.Entity, request.Quantity, slotCost);
         else if (request.Category == PlayerItemCategory.CarriedItem)
             AddStack(_items, request.ItemId, displayName, CatchKind.Item, request.Quantity, slotCost);
 
-        if (grantUnlock)
+        if (IsUnlockCategory(request.Category))
             GrantUnlock(request.ItemId, displayName, unlockKind, request.Quantity, repeatable, notify: true);
 
         RecalculateSlots();
         _appliedTransactionIds.Add(request.TransactionId);
-        return MakeResult(request.TransactionId, TransactionStatus.Succeeded, "Transaction succeeded.");
     }
 
-    TransactionResult ResolveSale(TransactionRequest request)
+    void ApplySale(TransactionRequest request)
     {
-        if (request.Category != PlayerItemCategory.Fish && request.Category != PlayerItemCategory.CarriedItem)
-            return Rejected(request, "Only fish and carried items can be sold.");
-
-        if (!TryMultiply(request.Quantity, request.UnitPrice, out int payout))
-            return Rejected(request, "Transaction total is invalid.");
-
-        if ((long)_money + payout > int.MaxValue)
-            return Rejected(request, "Money total is too large.");
-
         List<InventoryStack> list = request.Category == PlayerItemCategory.Fish ? _fish : _items;
-        if (!HasCount(list, request.ItemId, request.Quantity))
-            return Rejected(request, "Not enough items to sell.");
-
         Remove(list, request.ItemId, request.Quantity);
-        SetMoney(_money + payout);
+        SetMoney((int)((long)_money + request.TotalValue));
         RecalculateSlots();
         _appliedTransactionIds.Add(request.TransactionId);
-        return MakeResult(request.TransactionId, TransactionStatus.Succeeded, "Transaction succeeded.");
+    }
+
+    void DeliverDeferredTransaction(TransactionResult result)
+    {
+        if (_economy != null)
+        {
+            _economy.OnPlayerTransactionFinished(result);
+            return;
+        }
+
+        if (_warnedMissingEconomy)
+            return;
+
+        _warnedMissingEconomy = true;
+        Debug.LogWarning("PlayerManager finished a queued transaction with no Economy Manager assigned to receive the result.", this);
+    }
+
+    static bool UsesInventorySlots(PlayerItemCategory category)
+    {
+        return category == PlayerItemCategory.Fish || category == PlayerItemCategory.CarriedItem;
+    }
+
+    static int SlotCostOf(TransactionRequest request)
+    {
+        return request.SlotCostPerUnit > 0 ? request.SlotCostPerUnit : 1;
+    }
+
+    void DescribeUnlock(TransactionRequest request, out UnlockDefinition definition, out bool repeatable, out UnlockKind kind)
+    {
+        definition = IsUnlockCategory(request.Category) ? FindUnlock(request.ItemId) : null;
+        repeatable = definition != null ? definition.repeatable : request.Repeatable;
+        kind = definition != null ? definition.kind : ToUnlockKind(request.Category);
     }
 
     CatchProcessResult ResolveCatch(CatchInfo catchInfo, string catchToken)
@@ -1018,6 +1143,10 @@ public class PlayerManager : MonoBehaviour
         if (uiManager != null && _ui == null)
             Debug.LogWarning($"{nameof(PlayerManager)} on {name}: {uiManager.GetType().Name} does not implement {nameof(IPlayerUi)}.", this);
 
+        _economy = economyManager as IEconomyManager;
+        if (economyManager != null && _economy == null)
+            Debug.LogWarning($"{nameof(PlayerManager)} on {name}: {economyManager.GetType().Name} does not implement {nameof(IEconomyManager)}.", this);
+
         _world = worldStateManager as IWorldStateManager;
         if (worldStateManager != null && _world == null)
             Debug.LogWarning($"{nameof(PlayerManager)} on {name}: {worldStateManager.GetType().Name} does not implement {nameof(IWorldStateManager)}.", this);
@@ -1043,11 +1172,6 @@ public class PlayerManager : MonoBehaviour
 
         CurrentState = state;
         StateChanged?.Invoke(state);
-    }
-
-    TransactionResult Rejected(TransactionRequest request, string reason)
-    {
-        return MakeResult(request.TransactionId, TransactionStatus.Rejected, reason);
     }
 
     TransactionResult MakeResult(string transactionId, TransactionStatus status, string reason)
@@ -1189,7 +1313,7 @@ public struct TransactionRequest
     public string ItemId;
     public string DisplayName;
     public int Quantity;
-    public int UnitPrice;
+    public int TotalValue;
     public int SlotCostPerUnit;
     public bool Repeatable;
 }
@@ -1337,8 +1461,27 @@ public interface IPlayerUi
 {
     void PresentPlayerData(PlayerDataSnapshot data);
     void OnPlayerDataChanged(PlayerDataSnapshot data);
-    void OnTransactionResolved(TransactionResult result);
     void OnProgressionUpdated(ProgressionResult result);
+}
+
+public interface IEconomyManager
+{
+    /// <summary>
+    /// A priced transaction finished after the player manager was busy.
+    /// The economy manager returns this result to the UI.
+    /// </summary>
+    void OnPlayerTransactionFinished(TransactionResult result);
+}
+
+public struct ResourceCheck
+{
+    public bool IsSufficient;
+    public TransactionStatus Status;
+    public string Reason;
+    public int Money;
+    public int HeldCount;
+    public int InventoryUsed;
+    public int InventoryCapacity;
 }
 
 public interface IWorldStateManager
