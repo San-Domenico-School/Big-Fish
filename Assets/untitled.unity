@@ -1,0 +1,781 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!29 &1
+OcclusionCullingSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_OcclusionBakeSettings:
+    smallestOccluder: 5
+    smallestHole: 0.25
+    backfaceThreshold: 100
+  m_SceneGUID: 00000000000000000000000000000000
+  m_OcclusionCullingData: {fileID: 0}
+--- !u!104 &2
+RenderSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 10
+  m_Fog: 0
+  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_FogMode: 3
+  m_FogDensity: 0.01
+  m_LinearFogStart: 0
+  m_LinearFogEnd: 300
+  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
+  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_AmbientIntensity: 1
+  m_AmbientMode: 0
+  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_HaloStrength: 0.5
+  m_FlareStrength: 1
+  m_FlareFadeSpeed: 3
+  m_HaloTexture: {fileID: 0}
+  m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
+  m_DefaultReflectionMode: 0
+  m_DefaultReflectionResolution: 128
+  m_ReflectionBounces: 1
+  m_ReflectionIntensity: 1
+  m_CustomReflection: {fileID: 0}
+  m_Sun: {fileID: 0}
+  m_UseRadianceAmbientProbe: 0
+--- !u!157 &3
+LightmapSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
+  m_GISettings:
+    serializedVersion: 2
+    m_BounceScale: 1
+    m_IndirectOutputScale: 1
+    m_AlbedoBoost: 1
+    m_EnvironmentLightingMode: 0
+    m_EnableBakedLightmaps: 1
+    m_EnableRealtimeLightmaps: 0
+  m_LightmapEditorSettings:
+    serializedVersion: 12
+    m_Resolution: 2
+    m_BakeResolution: 40
+    m_AtlasSize: 1024
+    m_AO: 0
+    m_AOMaxDistance: 1
+    m_CompAOExponent: 1
+    m_CompAOExponentDirect: 0
+    m_ExtractAmbientOcclusion: 0
+    m_Padding: 2
+    m_LightmapParameters: {fileID: 0}
+    m_LightmapsBakeMode: 1
+    m_TextureCompression: 1
+    m_ReflectionCompression: 2
+    m_MixedBakeMode: 2
+    m_BakeBackend: 2
+    m_PVRSampling: 1
+    m_PVRDirectSampleCount: 32
+    m_PVRSampleCount: 512
+    m_PVRBounces: 2
+    m_PVREnvironmentSampleCount: 256
+    m_PVREnvironmentReferencePointCount: 2048
+    m_PVRFilteringMode: 1
+    m_PVRDenoiserTypeDirect: 2
+    m_PVRDenoiserTypeIndirect: 2
+    m_PVRDenoiserTypeAO: 2
+    m_PVRFilterTypeDirect: 0
+    m_PVRFilterTypeIndirect: 0
+    m_PVRFilterTypeAO: 0
+    m_PVREnvironmentMIS: 1
+    m_PVRCulling: 1
+    m_PVRFilteringGaussRadiusDirect: 1
+    m_PVRFilteringGaussRadiusIndirect: 1
+    m_PVRFilteringGaussRadiusAO: 1
+    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
+    m_PVRFilteringAtrousPositionSigmaIndirect: 2
+    m_PVRFilteringAtrousPositionSigmaAO: 1
+    m_ExportTrainingData: 0
+    m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
+  m_LightingDataAsset: {fileID: 20201, guid: 0000000000000000f000000000000000, type: 0}
+  m_LightingSettings: {fileID: 0}
+--- !u!196 &4
+NavMeshSettings:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_BuildSettings:
+    serializedVersion: 3
+    agentTypeID: 0
+    agentRadius: 0.5
+    agentHeight: 2
+    agentSlope: 45
+    agentClimb: 0.4
+    ledgeDropHeight: 0
+    maxJumpAcrossDistance: 0
+    minRegionArea: 2
+    manualCellSize: 0
+    cellSize: 0.16666667
+    manualTileSize: 0
+    tileSize: 256
+    buildHeightMesh: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
+    debug:
+      m_Flags: 0
+  m_NavMeshData: {fileID: 0}
+--- !u!1 &701435611
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 701435614}
+  - component: {fileID: 701435613}
+  - component: {fileID: 701435612}
+  m_Layer: 0
+  m_Name: Directional Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &701435612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701435611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
+--- !u!108 &701435613
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701435611}
+  m_Enabled: 1
+  serializedVersion: 13
+  m_Type: 1
+  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Intensity: 1
+  m_Range: 10
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.802082
+  m_CookieSize2D: {x: 0.5, y: 0.5}
+  m_Shadows:
+    m_Type: 2
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 1
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
+    m_CullingMatrixOverride:
+      e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
+    m_UseCullingMatrixOverride: 0
+  m_Cookie: {fileID: 0}
+  m_DrawHalo: 0
+  m_Flare: {fileID: 0}
+  m_RenderMode: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingLayerMask: 1
+  m_Lightmapping: 4
+  m_LightShadowCasterMode: 0
+  m_AreaSize: {x: 1, y: 1}
+  m_BounceIntensity: 1
+  m_ColorTemperature: 6570
+  m_UseColorTemperature: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
+  m_ForceVisible: 0
+  m_ShapeRadius: 0.025
+  m_ShadowAngle: 0
+  m_LightUnit: 1
+  m_LuxAtDistance: 1
+  m_EnableSpotReflector: 1
+--- !u!4 &701435614
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701435611}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1672460571
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1672460577}
+  - component: {fileID: 1672460576}
+  - component: {fileID: 1672460575}
+  - component: {fileID: 1672460574}
+  - component: {fileID: 1672460573}
+  - component: {fileID: 1672460572}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1672460572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672460571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f89144ad2ebc241d48330faf0a92ee4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldStateManager
+  regions:
+  - id: coast
+    displayName: Coast
+    habitat:
+      coralReef: 0.6
+      kelp: 0.6
+      seagrass: 0.6
+      pollution: 0.1
+    bluefinTuna:
+      speciesId: bluefin_tuna
+      population: 10
+      maxPopulation: 40
+    cod:
+      speciesId: cod
+      population: 10
+      maxPopulation: 40
+    kingCrab:
+      speciesId: king_crab
+      population: 10
+      maxPopulation: 40
+    mackerel:
+      speciesId: mackerel
+      population: 10
+      maxPopulation: 40
+    salmon:
+      speciesId: salmon
+      population: 10
+      maxPopulation: 40
+    seaBass:
+      speciesId: sea_bass
+      population: 10
+      maxPopulation: 40
+    swordfish:
+      speciesId: swordfish
+      population: 10
+      maxPopulation: 40
+  activeRegionId: coast
+  bluefinTuna:
+    speciesId: bluefin_tuna
+    baseReproductionRate: 0.08
+    respondsToCoral: 1
+    respondsToKelp: 0
+    respondsToSeagrass: 0
+    harmedByPollution: 1
+    canBeReintroduced: 0
+  cod:
+    speciesId: cod
+    baseReproductionRate: 0.16
+    respondsToCoral: 0
+    respondsToKelp: 1
+    respondsToSeagrass: 0
+    harmedByPollution: 1
+    canBeReintroduced: 0
+  kingCrab:
+    speciesId: king_crab
+    baseReproductionRate: 0.1
+    respondsToCoral: 0
+    respondsToKelp: 0
+    respondsToSeagrass: 1
+    harmedByPollution: 1
+    canBeReintroduced: 0
+  mackerel:
+    speciesId: mackerel
+    baseReproductionRate: 0.22
+    respondsToCoral: 0
+    respondsToKelp: 1
+    respondsToSeagrass: 1
+    harmedByPollution: 1
+    canBeReintroduced: 0
+  salmon:
+    speciesId: salmon
+    baseReproductionRate: 0.14
+    respondsToCoral: 0
+    respondsToKelp: 1
+    respondsToSeagrass: 1
+    harmedByPollution: 1
+    canBeReintroduced: 0
+  seaBass:
+    speciesId: sea_bass
+    baseReproductionRate: 0.15
+    respondsToCoral: 0
+    respondsToKelp: 1
+    respondsToSeagrass: 1
+    harmedByPollution: 1
+    canBeReintroduced: 0
+  swordfish:
+    speciesId: swordfish
+    baseReproductionRate: 0.07
+    respondsToCoral: 1
+    respondsToKelp: 0
+    respondsToSeagrass: 0
+    harmedByPollution: 1
+    canBeReintroduced: 0
+  regenerationPeriod: 120
+  scarceFraction: 0.2
+  minimumCapacityFactor: 0.15
+  uiManager: {fileID: 0}
+  environmentView: {fileID: 0}
+--- !u!114 &1672460573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672460571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b0b055414684436ab462b798a770597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SufianS_EconomyManager
+  bluefinTuna:
+    id: bluefin_tuna
+    displayName: Bluefin Tuna
+    basePrice: 90
+    minPrice: 45
+    maxPrice: 180
+    supply: 10
+    demand: 10
+    slotCost: 1
+  cod:
+    id: cod
+    displayName: Cod
+    basePrice: 14
+    minPrice: 7
+    maxPrice: 28
+    supply: 10
+    demand: 10
+    slotCost: 1
+  kingCrab:
+    id: king_crab
+    displayName: King Crab
+    basePrice: 40
+    minPrice: 20
+    maxPrice: 80
+    supply: 10
+    demand: 10
+    slotCost: 1
+  mackerel:
+    id: mackerel
+    displayName: Mackerel
+    basePrice: 8
+    minPrice: 4
+    maxPrice: 16
+    supply: 10
+    demand: 10
+    slotCost: 1
+  salmon:
+    id: salmon
+    displayName: Salmon
+    basePrice: 24
+    minPrice: 12
+    maxPrice: 48
+    supply: 10
+    demand: 10
+    slotCost: 1
+  seaBass:
+    id: sea_bass
+    displayName: Sea Bass
+    basePrice: 18
+    minPrice: 9
+    maxPrice: 36
+    supply: 10
+    demand: 10
+    slotCost: 1
+  swordfish:
+    id: swordfish
+    displayName: Swordfish
+    basePrice: 55
+    minPrice: 28
+    maxPrice: 110
+    supply: 10
+    demand: 10
+    slotCost: 1
+  equipment: []
+  marketUpdatePeriod: 20
+  simulationStrength: 0.15
+  simulationJitter: 1
+  buyDemandGain: 0.5
+  sellDemandLoss: 0.25
+  sellPricePercent: 80
+  worldStateManager: {fileID: 0}
+  playerManager: {fileID: 0}
+  uiManager: {fileID: 0}
+--- !u!114 &1672460574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672460571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f48fbea6d9d04bc794d5147c7d791f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
+  startingMoney: 0
+  allowDebt: 0
+  startingExperience: 0
+  inventoryCapacity: 20
+  defaultCatchExperience: 10
+  ranks: []
+  unlocks: []
+  catchRewards: []
+  startingFish: []
+  startingItems: []
+  startingEquipment: []
+  startingBoatUpgrades: []
+  startingRegions: []
+  fishingSystem: {fileID: 0}
+  economyManager: {fileID: 0}
+  uiManager: {fileID: 0}
+  worldStateManager: {fileID: 0}
+  unlockReceivers: []
+  onPlayerDataChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onCatchProcessed:
+    m_PersistentCalls:
+      m_Calls: []
+  onProgressionUpdated:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1672460575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672460571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edd2f1a5a5f9748b7bf712befda823b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem
+  fishingButton:
+    m_Name: FishingButton
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: 367fb85a-73c1-4d44-acff-ee564acd8e1b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: a3586441-3d19-4d0c-a8f8-145c6694e685
+      m_Path: <Keyboard>/f
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingButton
+      m_Flags: 0
+    - m_Name: 
+      m_Id: d8d47a15-f6a3-429f-97bb-6f9b5b4d6837
+      m_Path: <Gamepad>/buttonWest
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingButton
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  fishingKey:
+    m_Name: FishingKey
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: 6875af7a-1d17-4338-898a-6163f7154cab
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 09ffa455-42f8-423d-a4f3-773821911272
+      m_Path: <Keyboard>/f
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingKey
+      m_Flags: 0
+    - m_Name: 
+      m_Id: da9ce353-0e25-4aad-b512-fd95e4acc33d
+      m_Path: <Gamepad>/buttonEast
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingKey
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  rodLook:
+    m_Name: RodLook
+    m_Type: 0
+    m_ExpectedControlType: Vector2
+    m_Id: f265ed70-21ba-4ee7-bdb7-fa8a6d94724c
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: c481db54-b558-4f1e-85ea-7cb095307eb9
+      m_Path: <Mouse>/delta
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: RodLook
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  pointerPosition:
+    m_Name: FishingPointer
+    m_Type: 0
+    m_ExpectedControlType: Vector2
+    m_Id: 06f0c512-ba9c-4c4d-b7be-964846f80c1f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 65ee93a9-5cbf-44d8-822f-2fd906743864
+      m_Path: <Mouse>/position
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingPointer
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  fishingConfirm:
+    m_Name: FishingConfirm
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: 9f58f31e-8a5f-4f84-ba35-1a611df5dc8f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: adba3fc5-167e-44ba-9023-ea1b88d02ed3
+      m_Path: <Keyboard>/space
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingConfirm
+      m_Flags: 0
+    - m_Name: 
+      m_Id: ced8f405-ce68-47a1-abc7-c0bf94d60792
+      m_Path: <Gamepad>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingConfirm
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  fishingUiRoot: {fileID: 1672460571}
+  environmentController: {fileID: 1672460573}
+  fishingRod: {fileID: 0}
+  animator: {fileID: 0}
+  movementBehaviours: []
+  otherUiBehaviours: []
+  rodSensitivity: 0.08
+  pitchLimits: {x: -35, y: 35}
+  yawLimits: {x: -75, y: 75}
+  castTrigger: Cast
+  fishingBool: Fishing
+  reelBool: Reel
+  rodYawFloat: RodYaw
+  rodPitchFloat: RodPitch
+  biteInterval: 5
+  catchChance: 1
+  catchTable: []
+  onFishingStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onFishingEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  onCatchRelayed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1672460576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672460571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6991158a3070a42c18c4068ea860f0c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoatMovement
+--- !u!4 &1672460577
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1672460571}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1970790488
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1970790491}
+  - component: {fileID: 1970790490}
+  - component: {fileID: 1970790489}
+  m_Layer: 0
+  m_Name: Main Camera
+  m_TagString: MainCamera
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!81 &1970790489
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970790488}
+  m_Enabled: 1
+--- !u!20 &1970790490
+Camera:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970790488}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
+  m_Iso: 200
+  m_ShutterSpeed: 0.005
+  m_Aperture: 16
+  m_FocusDistance: 10
+  m_FocalLength: 50
+  m_BladeCount: 5
+  m_Curvature: {x: 2, y: 11}
+  m_BarrelClipping: 0.25
+  m_Anamorphism: 0
+  m_SensorSize: {x: 36, y: 24}
+  m_LensShift: {x: 0, y: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1000
+  field of view: 60
+  orthographic: 0
+  orthographic size: 5
+  m_Depth: -1
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 1
+  m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &1970790491
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970790488}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 1970790491}
+  - {fileID: 701435614}
+  - {fileID: 1672460577}

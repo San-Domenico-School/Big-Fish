@@ -785,15 +785,53 @@ public class PlayerManager : MonoBehaviour
     void NotifyUnlock(UnlockGrant grant)
     {
         for (int i = 0; i < _receivers.Count; i++)
-            _receivers[i].OnContentUnlocked(grant);
+        {
+            try
+            {
+                _receivers[i].OnContentUnlocked(grant);
+            }
+            catch (Exception error)
+            {
+                Debug.LogException(error, this);
+            }
+        }
     }
 
     void NotifyDataChanged()
     {
         PlayerDataSnapshot data = BuildSnapshot();
-        _ui?.OnPlayerDataChanged(data);
-        PlayerDataChanged?.Invoke(data);
-        onPlayerDataChanged?.Invoke();
+        try
+        {
+            _ui?.OnPlayerDataChanged(data);
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+        }
+
+        if (PlayerDataChanged != null)
+        {
+            foreach (Action<PlayerDataSnapshot> handler in PlayerDataChanged.GetInvocationList())
+            {
+                try
+                {
+                    handler(data);
+                }
+                catch (Exception error)
+                {
+                    Debug.LogException(error, this);
+                }
+            }
+        }
+
+        try
+        {
+            onPlayerDataChanged?.Invoke();
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+        }
     }
 
     PlayerDataSnapshot BuildSnapshot()

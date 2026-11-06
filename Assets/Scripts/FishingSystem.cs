@@ -89,6 +89,14 @@ public class FishingSystem : MonoBehaviour
     bool _hasReelBool;
     bool _hasRodYaw;
     bool _hasRodPitch;
+    bool _sentFishingValue;
+    bool _hasSentFishingValue;
+    bool _sentReelValue;
+    bool _hasSentReelValue;
+    bool _hasSentRodYaw;
+    bool _hasSentRodPitch;
+    float _sentRodYaw;
+    float _sentRodPitch;
 
     public FishingState CurrentState { get; private set; } = FishingState.Inactive;
     public bool IsFishing => CurrentState == FishingState.Fishing;
@@ -283,27 +291,55 @@ public class FishingSystem : MonoBehaviour
             return;
 
         SetFishingAnimation(true);
-
-        if (_hasReelBool)
-            animator.SetBool(_reelHash, input.ConfirmHeld);
+        SetReelAnimation(input.ConfirmHeld);
 
         if (_hasRodYaw)
         {
             float yaw = Mathf.InverseLerp(yawLimits.x, yawLimits.y, _rodAngles.y);
-            animator.SetFloat(_rodYawHash, yaw);
+            if (!_hasSentRodYaw || _sentRodYaw != yaw)
+            {
+                _hasSentRodYaw = true;
+                _sentRodYaw = yaw;
+                animator.SetFloat(_rodYawHash, yaw);
+            }
         }
 
         if (_hasRodPitch)
         {
             float pitch = Mathf.InverseLerp(pitchLimits.x, pitchLimits.y, _rodAngles.x);
-            animator.SetFloat(_rodPitchHash, pitch);
+            if (!_hasSentRodPitch || _sentRodPitch != pitch)
+            {
+                _hasSentRodPitch = true;
+                _sentRodPitch = pitch;
+                animator.SetFloat(_rodPitchHash, pitch);
+            }
         }
     }
 
     void SetFishingAnimation(bool fishing)
     {
-        if (animator != null && _hasFishingBool)
-            animator.SetBool(_fishingHash, fishing);
+        if (animator == null || !_hasFishingBool)
+            return;
+
+        if (_hasSentFishingValue && _sentFishingValue == fishing)
+            return;
+
+        _hasSentFishingValue = true;
+        _sentFishingValue = fishing;
+        animator.SetBool(_fishingHash, fishing);
+    }
+
+    void SetReelAnimation(bool reeling)
+    {
+        if (animator == null || !_hasReelBool)
+            return;
+
+        if (_hasSentReelValue && _sentReelValue == reeling)
+            return;
+
+        _hasSentReelValue = true;
+        _sentReelValue = reeling;
+        animator.SetBool(_reelHash, reeling);
     }
 
     void UpdateTimers(float deltaTime)

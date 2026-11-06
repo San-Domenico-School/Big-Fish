@@ -51,7 +51,7 @@ public class WorldStateManager : MonoBehaviour, IWorldStateManager
     public string ActiveRegionId => activeRegionId;
 
     public event Action<WorldActivityState> StateChanged;
-    public event Action PopulationChanged;
+    public event Action<string> PopulationChanged;
 
     void Awake()
     {
@@ -80,6 +80,7 @@ public class WorldStateManager : MonoBehaviour, IWorldStateManager
             return;
 
         _dayTimer = 0f;
+        _caughtTokens.Clear();
         RunRegeneration();
     }
 
@@ -98,6 +99,7 @@ public class WorldStateManager : MonoBehaviour, IWorldStateManager
         stock.population = Mathf.Max(0, stock.population - 1);
         stock.status = EvaluateStatus(stock);
         Publish(null);
+        NotifyPopulation(notice.Catch.Id);
     }
 
     public void SetActiveRegion(string regionId)
@@ -172,8 +174,19 @@ public class WorldStateManager : MonoBehaviour, IWorldStateManager
                 break;
         }
 
+        SpeciesPopulation[] stocks = region.AllStocks();
+        int[] populationBefore = new int[stocks.Length];
+        for (int i = 0; i < stocks.Length; i++)
+            populationBefore[i] = stocks[i] == null ? 0 : stocks[i].population;
+
         ClampRegionToCapacity(region);
         Publish(null);
+        for (int i = 0; i < stocks.Length; i++)
+        {
+            if (stocks[i] != null && stocks[i].population != populationBefore[i])
+                NotifyPopulation(stocks[i].speciesId);
+        }
+
         return true;
     }
 
@@ -189,6 +202,7 @@ public class WorldStateManager : MonoBehaviour, IWorldStateManager
         stock.population = Mathf.Clamp(amount, 0, capacity);
         stock.status = EvaluateStatus(stock);
         Publish(null);
+        NotifyPopulation(speciesId);
         return stock.population > 0;
     }
 
@@ -239,6 +253,7 @@ public class WorldStateManager : MonoBehaviour, IWorldStateManager
     {
         SetState(WorldActivityState.Regeneration);
         List<SpeciesChange> changes = new List<SpeciesChange>();
+        HashSet<string> changedSpecies = new HashSet<string>();
 
         if (regions != null)
         {
@@ -250,13 +265,21 @@ public class WorldStateManager : MonoBehaviour, IWorldStateManager
 
                 SpeciesPopulation[] stocks = region.AllStocks();
                 for (int s = 0; s < stocks.Length; s++)
-                    RegenerateStock(region, stocks[s], changes);
+                {
+                    SpeciesPopulation stock = stocks[s];
+                    int before = stock == null ? 0 : stock.population;
+                    RegenerateStock(region, stock, changes);
+                    if (stock != null && stock.population != before && !string.IsNullOrEmpty(stock.speciesId))
+                        changedSpecies.Add(stock.speciesId);
+                }
             }
         }
 
         RegenerationReport report = new RegenerationReport { Changes = changes.ToArray() };
         SetState(WorldActivityState.Active);
         Publish(report);
+        foreach (string speciesId in changedSpecies)
+            NotifyPopulation(speciesId);
     }
 
     void RegenerateStock(FishingRegion region, SpeciesPopulation stock, List<SpeciesChange> changes)
@@ -384,8 +407,12 @@ public class WorldStateManager : MonoBehaviour, IWorldStateManager
         _ui?.PresentWorldState(snapshot);
         if (regeneration.HasValue)
             _ui?.OnRegenerationCompleted(regeneration.Value);
+    }
 
-        PopulationChanged?.Invoke();
+    void NotifyPopulation(string speciesId)
+    {
+        if (!string.IsNullOrEmpty(speciesId))
+            PopulationChanged?.Invoke(speciesId);
     }
 
     void EnsureContent()

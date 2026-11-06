@@ -5,7 +5,10 @@ using UnityEngine;
 /// <summary>
 /// Market and transaction loop.
 /// MARKET UPDATE prices each species from world population. That population is the market supply.
+/// A sale pays a percent of the current buy price, and it cannot go below that species' minimum.
 /// TRANSACTION prices one buy or sell, asks the Player Manager to apply it, then returns to MARKET UPDATE.
+/// Another trade started during that call is rejected. Repeating a successful request returns the old result and does not charge the player again.
+/// If the Player Manager throws before the trade is applied, supply, demand, and prices stay as they were.
 /// This component never changes the player's money or inventory itself.
 /// </summary>
 [DisallowMultipleComponent]
@@ -35,6 +38,9 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
     [SerializeField] float buyDemandGain = 0.5f;
     [Min(0f)]
     [SerializeField] float sellDemandLoss = 0.25f;
+    [Range(1, 100)]
+    [Tooltip("Sell price is this percent of the buy price. It still cannot go below the species minimum, so a price already at the floor sells for the same amount.")]
+    [SerializeField] int sellPricePercent = 80;
 
     [Header("References")]
     [Tooltip("Market supply for each species is the total population reported by this World State Manager.")]
@@ -45,20 +51,24 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
     readonly Dictionary<string, FishSpecies> _fishById = new Dictionary<string, FishSpecies>();
     readonly Dictionary<string, EquipmentPrice> _equipmentById = new Dictionary<string, EquipmentPrice>();
     readonly Dictionary<string, float> _restingDemand = new Dictionary<string, float>();
+    readonly HashSet<string> _dirtySpecies = new HashSet<string>();
+    readonly Dictionary<string, CompletedTrade> _completedTrades = new Dictionary<string, CompletedTrade>(StringComparer.Ordinal);
 
     IEconomyUi _ui;
     PricedTrade _activeTrade;
+    bool _busy;
     bool _waitingForPlayer;
-    bool _supplyDirty;
+    bool _refreshAllSpecies;
     float _marketTimer;
     bool _warnedMissingPlayer;
     bool _warnedMissingBasePrice;
 
     public EconomyState CurrentState { get; private set; } = EconomyState.MarketUpdate;
-    public bool IsMarketUpdating => CurrentState == EconomyState.MarketUpdate && !_waitingForPlayer;
+    public bool IsMarketUpdating => AcceptingTrades();
 
     public event Action<EconomyState> StateChanged;
     public event Action<MarketReport> MarketUpdated;
+    public event Action<SpeciesQuote> SpeciesPriceUpdated;
     public event Action<EconomyTradeResult> TradeFinished;
 
     void Awake()
@@ -95,7 +105,7 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
 
     void Update()
     {
-        if (CurrentState != EconomyState.MarketUpdate || _waitingForPlayer)
+        if (!AcceptingTrades())
             return;
 
         _marketTimer += Time.deltaTime;
@@ -110,45 +120,66 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
 
     /// <summary>
     /// UI entry. Leaves MARKET UPDATE for one buy or sell, then returns when that trade finishes or is rejected.
+    /// The same successful request id returns the stored result and does not call the Player Manager again.
     /// </summary>
     public EconomyTradeResult RequestTrade(TradeOrder order)
     {
-        if (CurrentState != EconomyState.MarketUpdate || _waitingForPlayer)
-        {
+        if (TryReplay(order, out EconomyTradeResult replayed))
+            return replayed;
+
+        if (!AcceptingTrades())
             return Rejected(order, "A transaction is already in progress.");
-        }
 
-        SetState(EconomyState.Transaction);
-
-        if (!TryPrice(order, out PricedTrade trade, out string priceError))
-            return Fail(Rejected(order, priceError));
-
-        if (playerManager == null)
+        _busy = true;
+        try
         {
-            WarnMissingPlayer();
-            return Fail(Rejected(trade, "Player Manager is not assigned."));
-        }
+            SetState(EconomyState.Transaction);
 
-        TransactionRequest request = BuildRequest(trade);
-        ResourceCheck resources = playerManager.HasSufficientResources(request);
-        if (!resources.IsSufficient)
-        {
-            EconomyTradeResult rejected = FromCheck(trade, resources);
-            Conclude(trade, rejected.Result, applyMarket: false);
-            return rejected;
-        }
+            if (!TryPrice(order, out PricedTrade trade, out string priceError))
+                return Fail(Rejected(order, priceError));
 
-        TransactionResult result = playerManager.CompleteTransaction(request);
-        if (result.Status == TransactionStatus.Deferred)
-        {
-            _activeTrade = trade;
-            _waitingForPlayer = true;
+            if (playerManager == null)
+            {
+                WarnMissingPlayer();
+                return Fail(Rejected(trade, "Player Manager is not assigned."));
+            }
+
+            TransactionRequest request = BuildRequest(trade);
+            TransactionResult result;
+            try
+            {
+                ResourceCheck resources = playerManager.HasSufficientResources(request);
+                if (!resources.IsSufficient)
+                {
+                    EconomyTradeResult rejected = FromCheck(trade, resources);
+                    Conclude(trade, rejected.Result, applyMarket: false);
+                    return rejected;
+                }
+
+                result = playerManager.CompleteTransaction(request);
+            }
+            catch (Exception error)
+            {
+                Debug.LogException(error, this);
+                if (!TryRecoverAppliedTrade(trade, out result))
+                    return Fail(Rejected(trade, "The Player Manager could not complete this trade: " + error.Message));
+            }
+
+            if (result.Status == TransactionStatus.Deferred)
+            {
+                _activeTrade = trade;
+                _waitingForPlayer = true;
+                return ToTradeResult(trade, result);
+            }
+
+            bool affectsMarket = result.Status == TransactionStatus.Succeeded && trade.AffectsFishMarket;
+            Conclude(trade, result, affectsMarket);
             return ToTradeResult(trade, result);
         }
-
-        bool affectsMarket = result.Status == TransactionStatus.Succeeded && trade.AffectsFishMarket;
-        Conclude(trade, result, affectsMarket);
-        return ToTradeResult(trade, result);
+        finally
+        {
+            _busy = false;
+        }
     }
 
     public void OnPlayerTransactionFinished(TransactionResult result)
@@ -156,10 +187,18 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
         if (!_waitingForPlayer || result.TransactionId != _activeTrade.TransactionId)
             return;
 
-        PricedTrade trade = _activeTrade;
-        _waitingForPlayer = false;
-        bool affectsMarket = result.Status == TransactionStatus.Succeeded && trade.AffectsFishMarket;
-        Conclude(trade, result, affectsMarket);
+        _busy = true;
+        try
+        {
+            PricedTrade trade = _activeTrade;
+            _waitingForPlayer = false;
+            bool affectsMarket = result.Status == TransactionStatus.Succeeded && trade.AffectsFishMarket;
+            Conclude(trade, result, affectsMarket);
+        }
+        finally
+        {
+            _busy = false;
+        }
     }
 
     public MarketReport GetMarketReport()
@@ -193,6 +232,9 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
             PublishMarket();
         }
 
+        if (result.Status == TransactionStatus.Succeeded)
+            RememberTrade(trade, result);
+
         ReturnToMarket(ToTradeResult(trade, result));
     }
 
@@ -205,14 +247,33 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
     void ReturnToMarket(EconomyTradeResult result)
     {
         SetState(EconomyState.MarketUpdate);
-        if (_supplyDirty)
-        {
-            RefreshPrices();
-            PublishMarket();
-        }
+        FlushQueuedPrices();
+        NotifyTradeFinished(result);
+        FlushQueuedPrices();
+    }
 
-        _ui?.OnTradeFinished(result);
-        TradeFinished?.Invoke(result);
+    void FlushQueuedPrices()
+    {
+        for (int pass = 0; pass < 4 && (_refreshAllSpecies || _dirtySpecies.Count > 0); pass++)
+        {
+            bool publishFullMarket = _refreshAllSpecies;
+            string[] dirtySpecies = CopyIds(_dirtySpecies);
+            _refreshAllSpecies = false;
+            _dirtySpecies.Clear();
+
+            if (publishFullMarket)
+            {
+                RefreshPrices();
+                PublishMarket();
+                continue;
+            }
+
+            for (int i = 0; i < dirtySpecies.Length; i++)
+                RefreshSpeciesPrice(dirtySpecies[i]);
+
+            for (int i = 0; i < dirtySpecies.Length; i++)
+                PublishSpecies(dirtySpecies[i]);
+        }
     }
 
     bool TryPrice(TradeOrder order, out PricedTrade trade, out string error)
@@ -251,7 +312,9 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
                 return false;
             }
 
-            int unitPrice = species.currentPrice;
+            int unitPrice = order.Kind == TransactionKind.Sale
+                ? BuybackPrice(species.currentPrice, Mathf.Max(1, species.minPrice))
+                : species.currentPrice;
             if (!TryMultiply(order.Quantity, unitPrice, out int total))
             {
                 error = "Transaction total is invalid.";
@@ -282,7 +345,10 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
                 return false;
             }
 
-            if (!TryMultiply(order.Quantity, listing.price, out int total))
+            int unitPrice = order.Kind == TransactionKind.Sale
+                ? BuybackPrice(listing.price, 0)
+                : listing.price;
+            if (!TryMultiply(order.Quantity, unitPrice, out int total))
             {
                 error = "Transaction total is invalid.";
                 return false;
@@ -296,7 +362,7 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
                 ItemId = listing.id,
                 DisplayName = string.IsNullOrEmpty(listing.displayName) ? listing.id : listing.displayName,
                 Quantity = order.Quantity,
-                UnitPrice = listing.price,
+                UnitPrice = unitPrice,
                 TotalValue = total,
                 Repeatable = listing.repeatable,
                 AffectsFishMarket = false
@@ -368,6 +434,16 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
         }
     }
 
+    void RefreshSpeciesPrice(string speciesId)
+    {
+        if (string.IsNullOrEmpty(speciesId) || !_fishById.TryGetValue(speciesId, out FishSpecies fish) || fish == null)
+            return;
+
+        Sanitize(fish);
+        PullSupply(fish);
+        fish.currentPrice = CalculatePrice(fish);
+    }
+
     int CalculatePrice(FishSpecies fish)
     {
         float supply = Mathf.Max(fish.supply, 0.01f);
@@ -379,8 +455,34 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
     void PublishMarket()
     {
         MarketReport report = GetMarketReport();
-        _ui?.PresentMarket(report);
-        MarketUpdated?.Invoke(report);
+        try
+        {
+            _ui?.PresentMarket(report);
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+        }
+
+        Notify(MarketUpdated, report);
+    }
+
+    void PublishSpecies(string speciesId)
+    {
+        if (string.IsNullOrEmpty(speciesId) || !_fishById.TryGetValue(speciesId, out FishSpecies fish) || fish == null)
+            return;
+
+        SpeciesQuote quote = ToQuote(fish);
+        try
+        {
+            _ui?.PresentSpecies(quote);
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+        }
+
+        Notify(SpeciesPriceUpdated, quote);
     }
 
     void EnsureFish()
@@ -450,19 +552,31 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
             return;
 
         fish.supply = worldStateManager.GetSpeciesPopulation(fish.id);
-        _supplyDirty = false;
     }
 
-    void HandlePopulationChanged()
+    void HandlePopulationChanged(string speciesId)
     {
-        if (CurrentState != EconomyState.MarketUpdate || _waitingForPlayer)
+        if (string.IsNullOrEmpty(speciesId))
         {
-            _supplyDirty = true;
+            if (!AcceptingTrades())
+            {
+                _refreshAllSpecies = true;
+                return;
+            }
+
+            RefreshPrices();
+            PublishMarket();
             return;
         }
 
-        RefreshPrices();
-        PublishMarket();
+        if (!AcceptingTrades())
+        {
+            _dirtySpecies.Add(speciesId);
+            return;
+        }
+
+        RefreshSpeciesPrice(speciesId);
+        PublishSpecies(speciesId);
     }
 
     void ResolveUi()
@@ -478,7 +592,115 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
             return;
 
         CurrentState = state;
-        StateChanged?.Invoke(state);
+        Notify(StateChanged, state);
+    }
+
+    bool AcceptingTrades()
+    {
+        return !_busy && !_waitingForPlayer && CurrentState == EconomyState.MarketUpdate;
+    }
+
+    bool TryReplay(TradeOrder order, out EconomyTradeResult result)
+    {
+        result = default;
+        if (string.IsNullOrWhiteSpace(order.TransactionId) || !_completedTrades.TryGetValue(order.TransactionId, out CompletedTrade prior))
+            return false;
+
+        if (prior.Kind == order.Kind && prior.Category == order.Category && prior.ItemId == order.ItemId && prior.Quantity == order.Quantity)
+        {
+            result = prior.Result;
+            return true;
+        }
+
+        result = Rejected(order, "This request id was already used for another trade.");
+        return true;
+    }
+
+    void RememberTrade(PricedTrade trade, TransactionResult result)
+    {
+        if (string.IsNullOrEmpty(trade.TransactionId) || _completedTrades.ContainsKey(trade.TransactionId))
+            return;
+
+        _completedTrades.Add(trade.TransactionId, new CompletedTrade
+        {
+            Kind = trade.Kind,
+            Category = trade.Category,
+            ItemId = trade.ItemId,
+            Quantity = trade.Quantity,
+            Result = ToTradeResult(trade, result)
+        });
+    }
+
+    bool TryRecoverAppliedTrade(PricedTrade trade, out TransactionResult result)
+    {
+        result = default;
+        try
+        {
+            if (playerManager == null || !playerManager.HasProcessedTransaction(trade.TransactionId))
+                return false;
+
+            PlayerDataSnapshot data = playerManager.GetPlayerData();
+            result = new TransactionResult
+            {
+                TransactionId = trade.TransactionId,
+                Status = TransactionStatus.Succeeded,
+                Reason = "Transaction succeeded.",
+                Money = data.Money,
+                InventoryUsed = data.InventoryUsed
+            };
+            return true;
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+            return false;
+        }
+    }
+
+    int BuybackPrice(int buyPrice, int minimumPrice)
+    {
+        int percent = Mathf.Clamp(sellPricePercent, 1, 100);
+        int discounted = (int)((long)Mathf.Max(0, buyPrice) * percent / 100);
+        return Mathf.Max(Mathf.Max(0, minimumPrice), discounted);
+    }
+
+    void NotifyTradeFinished(EconomyTradeResult result)
+    {
+        try
+        {
+            _ui?.OnTradeFinished(result);
+        }
+        catch (Exception error)
+        {
+            Debug.LogException(error, this);
+        }
+
+        Notify(TradeFinished, result);
+    }
+
+    void Notify<T>(Action<T> handlers, T value)
+    {
+        if (handlers == null)
+            return;
+
+        foreach (Action<T> handler in handlers.GetInvocationList())
+        {
+            try
+            {
+                handler(value);
+            }
+            catch (Exception error)
+            {
+                Debug.LogException(error, this);
+            }
+        }
+    }
+
+    static string[] CopyIds(HashSet<string> ids)
+    {
+        string[] copy = new string[ids.Count];
+        ids.CopyTo(copy);
+        return copy;
     }
 
     void WarnMissingPlayer()
@@ -510,7 +732,7 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
         fish.slotCost = Mathf.Max(1, fish.slotCost);
     }
 
-    static SpeciesQuote ToQuote(FishSpecies fish)
+    SpeciesQuote ToQuote(FishSpecies fish)
     {
         return new SpeciesQuote
         {
@@ -521,7 +743,8 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
             MaxPrice = fish.maxPrice,
             Supply = fish.supply,
             Demand = fish.demand,
-            Price = fish.currentPrice
+            Price = fish.currentPrice,
+            SellPrice = BuybackPrice(fish.currentPrice, Mathf.Max(1, fish.minPrice))
         };
     }
 
@@ -611,6 +834,15 @@ public class SufianS_EconomyManager : MonoBehaviour, IEconomyManager
         public bool Repeatable;
         public bool AffectsFishMarket;
     }
+
+    struct CompletedTrade
+    {
+        public TransactionKind Kind;
+        public PlayerItemCategory Category;
+        public string ItemId;
+        public int Quantity;
+        public EconomyTradeResult Result;
+    }
 }
 
 public enum EconomyState
@@ -638,6 +870,7 @@ public struct SpeciesQuote
     public float Supply;
     public float Demand;
     public int Price;
+    public int SellPrice;
 }
 
 public struct MarketReport
@@ -718,5 +951,6 @@ public class EquipmentPrice
 public interface IEconomyUi
 {
     void PresentMarket(MarketReport report);
+    void PresentSpecies(SpeciesQuote quote);
     void OnTradeFinished(EconomyTradeResult result);
 }
