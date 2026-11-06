@@ -359,6 +359,123 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &921812109
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 921812110}
+  - component: {fileID: 921812111}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &921812110
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921812109}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.98248, y: 0, z: 4.38545}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &921812111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921812109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b0b055414684436ab462b798a770597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SufianS_EconomyManager
+  bluefinTuna:
+    id: bluefin_tuna
+    displayName: Bluefin Tuna
+    basePrice: 90
+    minPrice: 45
+    maxPrice: 180
+    supply: 10
+    demand: 10
+    slotCost: 1
+  cod:
+    id: cod
+    displayName: Cod
+    basePrice: 14
+    minPrice: 7
+    maxPrice: 28
+    supply: 10
+    demand: 10
+    slotCost: 1
+  kingCrab:
+    id: king_crab
+    displayName: King Crab
+    basePrice: 40
+    minPrice: 20
+    maxPrice: 80
+    supply: 10
+    demand: 10
+    slotCost: 1
+  mackerel:
+    id: mackerel
+    displayName: Mackerel
+    basePrice: 8
+    minPrice: 4
+    maxPrice: 16
+    supply: 10
+    demand: 10
+    slotCost: 1
+  salmon:
+    id: salmon
+    displayName: Salmon
+    basePrice: 24
+    minPrice: 12
+    maxPrice: 48
+    supply: 10
+    demand: 10
+    slotCost: 1
+  seaBass:
+    id: sea_bass
+    displayName: Sea Bass
+    basePrice: 18
+    minPrice: 9
+    maxPrice: 36
+    supply: 10
+    demand: 10
+    slotCost: 1
+  swordfish:
+    id: swordfish
+    displayName: Swordfish
+    basePrice: 55
+    minPrice: 28
+    maxPrice: 110
+    supply: 10
+    demand: 10
+    slotCost: 1
+  equipment: []
+  marketUpdatePeriod: 20
+  simulationStrength: 0.15
+  simulationJitter: 1
+  buyDemandGain: 0.5
+  sellDemandLoss: 0.25
+  sellPricePercent: 80
+  worldStateManager: {fileID: 0}
+  playerManager: {fileID: 0}
+  uiManager: {fileID: 0}
 --- !u!1 &1837825773
 GameObject:
   m_ObjectHideFlags: 0
@@ -458,3 +575,4 @@ SceneRoots:
   - {fileID: 1837825776}
   - {fileID: 872836544}
   - {fileID: 33847343}
+  - {fileID: 921812110}
