@@ -18,7 +18,7 @@ MonoBehaviour:
   m_SeeAllPackageVersions: 0
   m_DismissPreviewPackagesInUse: 0
   oneTimeWarningShown: 0
-  oneTimePackageErrorsPopUpShown: 0
+  oneTimePackageErrorsPopUpShown: 1
   m_MainRegistry:
     m_Id: main
     m_Name: 
@@ -38,7 +38,7 @@ MonoBehaviour:
     m_Modified: 0
     m_ErrorMessage: 
     m_UserModificationsEntityId:
-      m_rawData: 568105584918792958
+      m_rawData: 1099511639582
     m_OriginalEntityId:
-      m_rawData: 568105584918792960
+      m_rawData: 1099511639583
   m_LoadAssets: 0
