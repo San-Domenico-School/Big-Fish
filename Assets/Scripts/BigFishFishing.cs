@@ -11,12 +11,16 @@ public class BigFishFishing : MonoBehaviour
     public class FishData
     {
         public string fishName = "Blue Tang";
+        public string speciesId;
         public GameObject fishPrefab;
         public int sellPrice = 25;
     }
 
     [Header("Catch Reward UI")]
     [SerializeField] private CatchRewardUI catchRewardUI;
+
+    [Header("Economy")]
+    [SerializeField] private SufianS_EconomyManager economy;
 
     [Header("Original Fish")]
     [SerializeField] private GameObject originalFish;
@@ -118,16 +122,48 @@ public class BigFishFishing : MonoBehaviour
 
         hasCaughtFish = true;
 
+        int sellPrice = QuoteSellPrice(caughtFish);
+
         Debug.Log(
             "Caught " + caughtFish.fishName +
-            " worth $" + caughtFish.sellPrice
+            " worth $" + sellPrice
         );
 
         catchRewardUI.ShowCatch(
             originalFish,
             caughtFish.fishName,
-            caughtFish.sellPrice
+            sellPrice
         );
+    }
+
+    private int QuoteSellPrice(FishData caughtFish)
+    {
+        if (economy == null)
+            economy = FindAnyObjectByType<SufianS_EconomyManager>();
+
+        if (economy == null || string.IsNullOrEmpty(caughtFish.speciesId))
+        {
+            Debug.LogWarning(
+                "BigFishFishing: Economy sell price is unavailable. Using the fallback price."
+            );
+            return caughtFish.sellPrice;
+        }
+
+        SpeciesQuote[] species = economy.GetMarketReport().Species;
+
+        if (species != null)
+        {
+            for (int i = 0; i < species.Length; i++)
+            {
+                if (species[i].Id == caughtFish.speciesId)
+                    return species[i].SellPrice;
+            }
+        }
+
+        Debug.LogWarning(
+            "BigFishFishing: No economy quote for " + caughtFish.speciesId + ". Using the fallback price."
+        );
+        return caughtFish.sellPrice;
     }
 
     private FishData GetRandomFish()
