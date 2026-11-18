@@ -13,8 +13,13 @@ namespace BigFish
         // Length of the boat model (FishingBoat is ~12 units)
         public float BoatLength = 12f;
 
+        [Tooltip("How high the boat sits above the water. Raise it if the hull sinks in.")]
+        public float BoatRideHeight = 0f;
+
         [Header("Camera")]
         public bool CameraFollows = true;
+        [Tooltip("Camera to follow the boat with. Leave empty to use Camera.main.")]
+        public Camera FollowCamera;
         public Vector3 CameraOffset = new Vector3(0f, 9f, -20f);
         public float CameraSmoothing = 4f;
 
@@ -45,10 +50,12 @@ namespace BigFish
 
             Boat.BoatLength = BoatLength;
             Boat.WaterLevel = transform.position.y;
+            Boat.RideHeight = BoatRideHeight;
 
-            if (CameraFollows && Camera.main != null)
+            Camera cam = FollowCamera != null ? FollowCamera : Camera.main;
+            if (CameraFollows && cam != null)
             {
-                _cam = Camera.main.transform;
+                _cam = cam.transform;
                 SnapCamera();
             }
         }

@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &178421061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 178421062}
+  m_Layer: 0
+  m_Name: CAMRIGzoANDFISHRIG
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &178421062
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178421061}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.23922, y: 54.3448, z: -129.04832}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &221874646
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -890,6 +921,332 @@ MonoBehaviour:
   CameraFollows: 1
   CameraOffset: {x: 0, y: 9, z: -20}
   CameraSmoothing: 4
+--- !u!1 &1600000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1600000002}
+  - component: {fileID: 1600000003}
+  m_Layer: 0
+  m_Name: FishingRodPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1600000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.38, y: -0.42, z: 0.75}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 330585546}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1600000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34a960d9c442489db08c5d5c2db706f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BigFish.ZoVoxelFishingRod
+  rodDirection: {x: -0.25, y: 0.8, z: 1}
+  voxel: 0.045
+  handleVoxels: 8
+  poleVoxels: 22
+  gripColor: {r: 0.22, g: 0.13, b: 0.07, a: 1}
+  gripStripeColor: {r: 0.12, g: 0.07, b: 0.04, a: 1}
+  poleColor: {r: 0.58, g: 0.38, b: 0.2, a: 1}
+  poleTipColor: {r: 0.8, g: 0.62, b: 0.38, a: 1}
+  metalColor: {r: 0.62, g: 0.64, b: 0.7, a: 1}
+  knobColor: {r: 0.85, g: 0.2, b: 0.15, a: 1}
+--- !u!1 &1600000010
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1600000011}
+  - component: {fileID: 1600000012}
+  - component: {fileID: 1600000013}
+  - component: {fileID: 1600000014}
+  m_Layer: 0
+  m_Name: ZoFishingMode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1600000011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600000010}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1600000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edd2f1a5a5f9748b7bf712befda823b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem
+  fishingButton:
+    m_Name: FishingButton
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: ebe45c90-9b6b-44dd-a7dc-20bda5784d59
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 42a996ec-f5d9-41fc-8cad-dc5740d63fcb
+      m_Path: <Keyboard>/f
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingButton
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  fishingKey:
+    m_Name: FishingKey
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: b372ca03-ca5e-47a5-bd94-5df93e944061
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 0630b10b-570c-4cfa-a31b-3148ac72bb3d
+      m_Path: <Keyboard>/escape
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingKey
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  rodLook:
+    m_Name: RodLook
+    m_Type: 0
+    m_ExpectedControlType: Vector2
+    m_Id: 62d1d70b-885d-4623-b4f8-80e8e9947e7a
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 902469ea-21e7-4508-8c35-c25a442f8691
+      m_Path: <Mouse>/delta
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: RodLook
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  pointerPosition:
+    m_Name: FishingPointer
+    m_Type: 0
+    m_ExpectedControlType: Vector2
+    m_Id: 91c1d205-f9aa-4159-bc51-f9bd7ba07cab
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: f1febf02-6f4e-4c15-a5c1-a9afe21409d4
+      m_Path: <Mouse>/position
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingPointer
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  fishingConfirm:
+    m_Name: FishingConfirm
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: 93c84840-ebc1-4545-a385-6350f87a7988
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 3059a028-6d62-49a2-8776-4ce0d8e0ff9c
+      m_Path: <Mouse>/leftButton
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingConfirm
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 79df84c8-6a13-4d22-9edc-ada93c949470
+      m_Path: <Gamepad>/buttonSouth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: FishingConfirm
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  fishingUiRoot: {fileID: 0}
+  environmentController: {fileID: 0}
+  fishingRod: {fileID: 0}
+  animator: {fileID: 0}
+  movementBehaviours: []
+  otherUiBehaviours: []
+  rodSensitivity: 0.05
+  pitchLimits: {x: -15, y: 15}
+  yawLimits: {x: -25, y: 25}
+  castTrigger: Cast
+  fishingBool: Fishing
+  reelBool: Reel
+  rodYawFloat: RodYaw
+  rodPitchFloat: RodPitch
+  biteInterval: 4
+  catchChance: 0.7
+  catchTable:
+  - kind: 1
+    id: blue_tang
+    displayName: Blue Tang
+    weight: 5
+  - kind: 1
+    id: clownfish
+    displayName: Clownfish
+    weight: 4
+  - kind: 1
+    id: tuna
+    displayName: Tuna
+    weight: 2
+  - kind: 0
+    id: old_boot
+    displayName: Old Boot
+    weight: 1
+  onFishingStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onFishingEnded:
+    m_PersistentCalls:
+      m_Calls: []
+  onCatchRelayed:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1600000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 540559a84e104fd18fc180774edb0529, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BigFish.ZoFishingModeController
+  fishingSystem: {fileID: 1600000012}
+  boatSpawner: {fileID: 1500000003}
+  fishingCamera: {fileID: 330585545}
+  rod: {fileID: 1600000003}
+  catchMinigame: {fileID: 1600000014}
+  castAction:
+    m_Name: Cast
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: 1be6b7e5-9814-4899-b165-80440ff24002
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 969141f7-076b-459a-9ff6-c61920629ead
+      m_Path: <Keyboard>/space
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Cast
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
+  cameraLocalPosition: {x: 0, y: 3.2, z: 4.6}
+  cameraYaw: 0
+  cameraPitch: 8
+  fishingFieldOfView: 70
+  transitionDuration: 1.1
+  lookSensitivity: 0.12
+  yawLimit: 180
+  pitchLimits: {x: -50, y: 60}
+  castDistance: 14
+  castFlightTime: 0.7
+  castArcHeight: 3
+  minBiteDelay: 1.5
+  reelDuration: 0.9
+  lineSag: 0.8
+  lineWidth: 0.015
+  lineColor: {r: 0.95, g: 0.95, b: 0.95, a: 1}
+  bobberSize: 0.3
+  messageSeconds: 2.5
+--- !u!114 &1600000014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37df704056a14439b79aa10fa5fe987b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BigFish.ZoTensionCatchMinigame
+  fishTuning:
+  - id: clownfish
+    difficulty: 0.15
+    minCm: 6
+    maxCm: 11
+  - id: blue_tang
+    difficulty: 0.3
+    minCm: 15
+    maxCm: 30
+  - id: tuna
+    difficulty: 0.76
+    minCm: 120
+    maxCm: 250
+  - id: old_boot
+    difficulty: 0.05
+    minCm: 28
+    maxCm: 32
+  defaultDifficulty: 0.4
+  rodBandWidth: 0.38
+  reelRate: 0.75
+  biteWindow: {x: 1.05, y: 0.55}
 --- !u!1001 &1832492845
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1004,182 +1361,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c241403b6e01b411ca0f0474d7ea3b76, type: 3}
---- !u!1 &1600000001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1600000002}
-  - component: {fileID: 1600000003}
-  m_Layer: 0
-  m_Name: FishingRodPivot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1600000002
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600000001}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.38, y: -0.42, z: 0.75}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 330585546}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1600000010
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1600000011}
-  - component: {fileID: 1600000012}
-  - component: {fileID: 1600000013}
-  - component: {fileID: 1600000014}
-  m_Layer: 0
-  m_Name: ZoFishingMode
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1600000011
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600000010}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1600000012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600000010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edd2f1a5a5f9748b7bf712befda823b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FishingSystem
-  fishingButton:
-    m_Name: FishingButton
-    m_Type: 1
-    m_ExpectedControlType: 
-    m_Id: ebe45c90-9b6b-44dd-a7dc-20bda5784d59
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 42a996ec-f5d9-41fc-8cad-dc5740d63fcb
-      m_Path: <Keyboard>/f
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: FishingButton
-      m_Flags: 0
-    m_Flags: 0
-  fishingKey:
-    m_Name: FishingKey
-    m_Type: 1
-    m_ExpectedControlType: 
-    m_Id: b372ca03-ca5e-47a5-bd94-5df93e944061
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 0630b10b-570c-4cfa-a31b-3148ac72bb3d
-      m_Path: <Keyboard>/escape
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: FishingKey
-      m_Flags: 0
-    m_Flags: 0
-  fishingRod: {fileID: 0}
-  rodSensitivity: 0.05
-  pitchLimits: {x: -15, y: 15}
-  yawLimits: {x: -25, y: 25}
-  biteInterval: 4
-  catchChance: 0.7
-  catchTable:
-  - kind: 1
-    id: blue_tang
-    displayName: Blue Tang
-    weight: 5
-  - kind: 1
-    id: clownfish
-    displayName: Clownfish
-    weight: 4
-  - kind: 1
-    id: tuna
-    displayName: Tuna
-    weight: 2
-  - kind: 0
-    id: old_boot
-    displayName: Old Boot
-    weight: 1
---- !u!114 &1600000013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600000010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 540559a84e104fd18fc180774edb0529, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BigFish.ZoFishingModeController
-  fishingSystem: {fileID: 1600000012}
-  boatSpawner: {fileID: 1500000003}
-  fishingCamera: {fileID: 330585545}
-  rod: {fileID: 1600000003}
-  catchMinigame: {fileID: 1600000014}
---- !u!114 &1600000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34a960d9c442489db08c5d5c2db706f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BigFish.ZoVoxelFishingRod
---- !u!114 &1600000014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600000010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37df704056a14439b79aa10fa5fe987b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BigFish.ZoTensionCatchMinigame
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1197,3 +1378,4 @@ SceneRoots:
   - {fileID: 1832492845}
   - {fileID: 1500000002}
   - {fileID: 1600000011}
+  - {fileID: 178421062}
