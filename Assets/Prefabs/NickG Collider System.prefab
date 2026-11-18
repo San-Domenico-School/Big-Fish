@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6893892784898302351
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8947446801227040203}
+  - component: {fileID: 8571460262522918777}
+  - component: {fileID: 6611151567149201523}
+  - component: {fileID: 5018956385947846703}
+  m_Layer: 0
+  m_Name: NickG Collider System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8947446801227040203
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6893892784898302351}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 58.20584, y: 36.207, z: -102.03046}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4138633027883654973}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8571460262522918777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6893892784898302351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a198804c1bca84040b573852c362f847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BigFish.NickG.Collisions.BoatCollisionGuard
+--- !u!114 &6611151567149201523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6893892784898302351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0f26e1d085a14367a7428918e1a5411, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BigFish.NickG.Collisions.ColliderSystemSetup
+  boat: {fileID: 0}
+  spawnedBoatName: PlayerBoat
+  solidModels: []
+  hullHeightFraction: 0.31
+--- !u!114 &5018956385947846703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6893892784898302351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 118c4a3ad2fb5db984b67d996b6fc16d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BigFish.NickG.HarborPlaytest.NickGHarborCollisions
+  playerBoat: {fileID: 0}
+  worldRoot: {fileID: 0}
+  waterSurface: {fileID: 0}
+  extraObstacles: []
+  hullHeightFraction: 0.31
+--- !u!1 &7510600762656459917
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4138633027883654973}
+  - component: {fileID: 766636926667251460}
+  m_Layer: 0
+  m_Name: NickG Collider System
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4138633027883654973
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7510600762656459917}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -58.20584, y: -36.207, z: 102.03046}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8947446801227040203}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &766636926667251460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7510600762656459917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 118c4a3ad2fb5db984b67d996b6fc16d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BigFish.NickG.HarborPlaytest.NickGHarborCollisions
+  playerBoat: {fileID: 0}
+  worldRoot: {fileID: 0}
+  waterSurface: {fileID: 0}
+  extraObstacles: []
+  hullHeightFraction: 0.31
