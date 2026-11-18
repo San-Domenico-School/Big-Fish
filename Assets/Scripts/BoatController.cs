@@ -17,6 +17,8 @@ namespace BigFish
 
         [Header("Water")]
         public float WaterLevel = 0f;
+        [Tooltip("Lifts the boat model above the water surface. Raise it if the hull sinks into the water.")]
+        public float RideHeight = 0f;
         public float WaveHeight = 0.25f;
         public float WaveSpeed = 1.2f;
 
@@ -383,7 +385,7 @@ namespace BigFish
             float t = Time.time;
 
             // Move boat up/down with the waves
-            pos.y = WaveHeightAt(pos.x, pos.z, t);
+            pos.y = WaveHeightAt(pos.x, pos.z, t) + RideHeight;
 
             transform.position = pos;
 
