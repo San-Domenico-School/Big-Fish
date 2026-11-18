@@ -1,0 +1,349 @@
+#fishing-root {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+#fishing-card {
+    position: absolute;
+    left: 50%;
+    bottom: 24px;
+    translate: -50% 0;
+    width: 520px;
+    max-width: 94%;
+    padding-top: 16px;
+    padding-right: 18px;
+    padding-bottom: 18px;
+    padding-left: 18px;
+    background-color: rgba(16, 45, 61, 0.93);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(138, 145, 120);
+    border-right-color: rgb(138, 145, 120);
+    border-top-color: rgb(138, 145, 120);
+    border-bottom-color: rgb(138, 145, 120);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    color: rgb(245, 235, 210);
+}
+
+#status-label {
+    min-width: 110px;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(245, 235, 210);
+}
+
+#timing-track {
+    flex-direction: row;
+    flex-shrink: 0;
+    width: 100%;
+    height: 44px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgb(184, 160, 105);
+    border-right-color: rgb(184, 160, 105);
+    border-top-color: rgb(184, 160, 105);
+    border-bottom-color: rgb(184, 160, 105);
+    background-color: rgb(10, 22, 29);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.outside-zone {
+    width: 30%;
+    height: 100%;
+    flex-shrink: 0;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background-color: rgb(187, 82, 97);
+}
+
+#left-zone {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+#right-zone {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+#target-zone {
+    width: 40%;
+    height: 100%;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(56, 132, 113);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-left-color: rgba(245, 225, 174, 0.65);
+    border-right-color: rgba(245, 225, 174, 0.65);
+}
+
+#target-label {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(255, 247, 227);
+}
+
+.zone-label {
+    font-size: 13px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(255, 247, 227);
+}
+
+#marker {
+    position: absolute;
+    left: 50%;
+    top: -8px;
+    bottom: -8px;
+    width: 6px;
+    margin-left: -3px;
+    background-color: rgb(255, 247, 227);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+#timer-track {
+    flex-shrink: 0;
+    width: 100%;
+    height: 28px;
+    margin-top: 14px;
+    background-color: rgb(11, 32, 44);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgb(113, 120, 102);
+    border-right-color: rgb(113, 120, 102);
+    border-top-color: rgb(113, 120, 102);
+    border-bottom-color: rgb(113, 120, 102);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    overflow: hidden;
+}
+
+#timer-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgb(43, 85, 98);
+}
+
+#timer-label {
+    position: absolute;
+    left: 12px;
+    right: 10px;
+    top: 0;
+    bottom: 0;
+    font-size: 15px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    color: rgb(245, 235, 210);
+}
+
+#hold-label {
+    margin-top: 8px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(175, 222, 197);
+}
+
+#instruction-label {
+    margin-top: 6px;
+    white-space: normal;
+    font-size: 13px;
+    -unity-text-align: middle-center;
+    color: rgb(183, 207, 207);
+}
+
+#actions {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#action-button, #restart-button {
+    min-width: 148px;
+    height: 32px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(161, 142, 101);
+    border-right-color: rgb(161, 142, 101);
+    border-top-color: rgb(161, 142, 101);
+    border-bottom-color: rgb(161, 142, 101);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    background-color: rgb(29, 66, 78);
+    color: rgb(245, 235, 210);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+#action-button:hover, #restart-button:hover {
+    background-color: rgb(46, 91, 103);
+}
+
+#action-button:active, #restart-button:active {
+    background-color: rgb(20, 53, 67);
+}
+
+#action-button:disabled {
+    opacity: 0.45;
+}
+
+#restart-button {
+    display: none;
+}
+
+.inner-frame {
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    top: 7px;
+    bottom: 7px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgba(181, 161, 113, 0.24);
+    border-right-color: rgba(181, 161, 113, 0.24);
+    border-top-color: rgba(181, 161, 113, 0.24);
+    border-bottom-color: rgba(181, 161, 113, 0.24);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.corner {
+    position: absolute;
+    width: 19px;
+    height: 19px;
+    border-left-color: rgb(210, 184, 125);
+    border-right-color: rgb(210, 184, 125);
+    border-top-color: rgb(210, 184, 125);
+    border-bottom-color: rgb(210, 184, 125);
+}
+
+.corner-top-left {
+    left: 7px;
+    top: 7px;
+    border-left-width: 2px;
+    border-top-width: 2px;
+    border-top-left-radius: 6px;
+}
+
+.corner-top-right {
+    right: 7px;
+    top: 7px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-top-right-radius: 6px;
+}
+
+.corner-bottom-left {
+    left: 7px;
+    bottom: 7px;
+    border-left-width: 2px;
+    border-bottom-width: 2px;
+    border-bottom-left-radius: 6px;
+}
+
+.corner-bottom-right {
+    right: 7px;
+    bottom: 7px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-bottom-right-radius: 6px;
+}
+
+#drag-handle {
+    flex-shrink: 0;
+    padding-bottom: 14px;
+}
+
+#drag-hint {
+    margin-top: 2px;
+    font-size: 10px;
+    -unity-text-align: middle-center;
+    color: rgb(157, 171, 170);
+}
+
+#fishing-heading {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.heading-rule {
+    width: 28px;
+    height: 1px;
+    margin-left: 7px;
+    margin-right: 7px;
+    background-color: rgba(211, 183, 124, 0.50);
+}
+
+.heading-diamond {
+    width: 5px;
+    height: 5px;
+    rotate: 45deg;
+    background-color: rgb(211, 183, 124);
+}
+
+.zone-tick {
+    width: 1px;
+    height: 12px;
+    background-color: rgba(235, 244, 216, 0.25);
+}
+
+.marker-jewel {
+    position: absolute;
+    left: 50%;
+    top: -4px;
+    margin-left: -6px;
+    width: 12px;
+    height: 12px;
+    rotate: 45deg;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgb(255, 247, 227);
+    border-right-color: rgb(255, 247, 227);
+    border-top-color: rgb(255, 247, 227);
+    border-bottom-color: rgb(255, 247, 227);
+    background-color: rgb(208, 176, 108);
+}

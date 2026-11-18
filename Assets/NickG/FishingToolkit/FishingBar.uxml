@@ -1,0 +1,50 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="FishingBar.uss" />
+    <ui:VisualElement name="fishing-root" picking-mode="Ignore">
+        <ui:VisualElement name="fishing-card" picking-mode="Position">
+            <ui:VisualElement class="inner-frame" picking-mode="Ignore" />
+            <ui:VisualElement class="corner corner-top-left" picking-mode="Ignore" />
+            <ui:VisualElement class="corner corner-top-right" picking-mode="Ignore" />
+            <ui:VisualElement class="corner corner-bottom-left" picking-mode="Ignore" />
+            <ui:VisualElement class="corner corner-bottom-right" picking-mode="Ignore" />
+            <ui:VisualElement name="drag-handle" picking-mode="Position">
+                <ui:VisualElement name="fishing-heading" picking-mode="Ignore">
+                    <ui:VisualElement class="heading-rule" picking-mode="Ignore" />
+                    <ui:VisualElement class="heading-diamond" picking-mode="Ignore" />
+                    <ui:Label name="status-label" text="FISHING" picking-mode="Ignore" />
+                    <ui:VisualElement class="heading-diamond" picking-mode="Ignore" />
+                    <ui:VisualElement class="heading-rule" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="drag-hint" text="DRAG TO MOVE" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="timing-track" picking-mode="Ignore">
+                <ui:VisualElement name="left-zone" class="outside-zone" picking-mode="Ignore">
+                    <ui:VisualElement class="zone-tick" picking-mode="Ignore" />
+                    <ui:Label name="slow-label" class="zone-label" text="SLOW" picking-mode="Ignore" />
+                    <ui:VisualElement class="zone-tick" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="target-zone" picking-mode="Ignore">
+                    <ui:Label name="target-label" text="GOOD" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="right-zone" class="outside-zone" picking-mode="Ignore">
+                    <ui:VisualElement class="zone-tick" picking-mode="Ignore" />
+                    <ui:Label name="fast-label" class="zone-label" text="FAST" picking-mode="Ignore" />
+                    <ui:VisualElement class="zone-tick" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="marker" picking-mode="Ignore">
+                    <ui:VisualElement class="marker-jewel" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="timer-track" picking-mode="Ignore">
+                <ui:VisualElement name="timer-fill" picking-mode="Ignore" />
+                <ui:Label name="timer-label" text="Timer  8.0s" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="hold-label" text="In green  0.0 / 2.0 s" picking-mode="Ignore" />
+            <ui:Label name="instruction-label" text="Tap SPACE at a steady pace. Stay in green for 2 seconds." picking-mode="Ignore" />
+            <ui:VisualElement name="actions" picking-mode="Ignore">
+                <ui:Button name="action-button" text="START  [SPACE]" />
+                <ui:Button name="restart-button" text="TRY AGAIN" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
